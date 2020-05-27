@@ -1,7 +1,105 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Strona główna";
 }
 
-<h1>Projekt e-hurtownia</h1>
-<h4>Opis projektu hurtowni na stronie głównej</h4>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>E-Wholesale Project</h1>
+            <h4>Project description on main page, to be continued</h4>
+        </div>
+
+        @if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
+            <div class="col-4 ml-3">
+                <div class="row">
+                    <div class="col bg-secondary">
+                        <div class="container text-center alert-secondary my-3">
+                            User dashboard
+                        </div>
+
+                        <form class="form-group">
+                            <input type="submit" class="btn btn-block btn-dark" value="Change password (WIP)" />
+
+                            @if (ViewBag.UserGroup == 1) {
+                                <input type="submit" class="btn btn-block btn-dark" value="Administrators cannot delete themselves" disabled="disabled" />
+                            } else {
+                                <input type="submit" class="btn btn-block btn-dark" value="Delete account (WIP)" />
+                            }
+                        </form>
+                    </div>
+                </div>
+
+                @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 2) { // Admin or Customer
+                    <div class="row">
+                        <div class="col bg-success">
+                            <div class="container text-center alert-success my-3">
+                                Customer dashboard
+                            </div>
+                        
+                            <form class="form-group">
+                                <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Change address (WIP)" />
+                            </form>
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 4) { // Admin or Offerent
+                    <div class="row">
+                        <div class="col bg-warning">
+                            <div class="container text-center alert-warning my-3">
+                                Offerent dashboard
+                            </div>
+
+                            <form class="form-group">
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage products (WIP)" />
+                            </form>
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 3) { // Admin or Storekeeper
+                    <div class="row">
+                        <div class="col bg-warning">
+                            <div class="container text-center alert-warning my-3">
+                                Storekeeper dashboard
+                            </div>
+
+                            <form class="form-group">
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage stocks (WIP)" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage orders (WIP)" />
+                            </form>
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.UserGroup == 1) { // Admin
+                    <div class="row">
+                        <div class="col bg-danger">
+                            <div class="container text-center alert-danger my-3">
+                                Administration dashboard
+                            </div>
+
+                            <form class="form-group">
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage users & accounts (WIP)" />
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section CheckUserLogged {
+    @if (ViewBag.COOKIE_LOGGED_USERNAME == null) {
+        <form method="post" class="form-inline">
+            <input type="submit" class="btn btn-primary btn-outline-primary" value="Sign in / Sign up" asp-controller="User" asp-action="Login" />
+        </form>
+    } else {
+        <form method="post" class="form-inline">
+            <label class="text-light">Logged in as&nbsp;<label class="text-info border-right">@ViewBag.COOKIE_LOGGED_USERNAME&nbsp;</label></label>&nbsp;
+            <a class="text-danger" asp-controller="User" asp-action="Logout">Log out</a>
+        </form>
+    }
+}

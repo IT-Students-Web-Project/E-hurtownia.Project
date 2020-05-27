@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Logowanie";
+}
+
+<h1>Log in to e-wholesale system</h1>
+<h5>If you do not have account, please fill the form below and click Register</h5>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <form method="post">
+                <div class="form-group">
+                    <label>Account username</label>
+
+                    @if (ViewBag.PasswordIncorrect != null || ViewBag.InvalidPassword != null) {
+                        <input class="form-control" type="text" name="login-username" value="@ViewBag.LastUserName" />
+                    } else {
+                        <input class="form-control" type="text" name="login-username" />
+                    }
+
+                    @if (ViewBag.UserNotFound != null) {
+                        <small class="text-danger">Could not find account with given username</small>
+                    } else if (ViewBag.InvalidUsername != null) {
+                        <small class="text-danger">Invalid username, too long or too short</small>
+                    } else if (ViewBag.UserExists != null) {
+                        <small class="text-danger">Username already taken, choose another one</small>
+                    } else {
+                        <small>Username must not be longer than 30 characters and shorter than 5 characters</small>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Account password</label>
+                    <input class="form-control" type="password" name="login-password" />
+
+                    @if (ViewBag.PasswordIncorrect != null) {
+                        <small class="text-danger">Invalid password</small>
+                    } else if (ViewBag.InvalidPassword != null) {
+                        <small class="text-danger">Invalid password, too long or too short</small>
+                    } else {
+                        <small>Maximum length of account password is 30 characters, the minimum is 5 characters</small>
+                    }
+                </div>
+
+                <input type="submit" class="btn btn-primary btn-outline-primary mr-3" value="Sign in" asp-controller="User" asp-action="CheckLogin" />
+                <input type="submit" class="btn btn-secondary" value="Sign up (WIP)" asp-controller="User" asp-action="CheckRegister" />
+            </form>
+        </div>
+
+        <div class="col"></div>
+    </div>
+</div>
