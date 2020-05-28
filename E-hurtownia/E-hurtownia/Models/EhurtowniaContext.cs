@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using E_hurtownia.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Utils;
 
 namespace E_hurtownia.Models
 {
@@ -36,7 +39,7 @@ namespace E_hurtownia.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=E-hurtownia;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+                optionsBuilder.UseSqlServer(ConfigUtils.GetDbConnectionString());
             }
         }
 
