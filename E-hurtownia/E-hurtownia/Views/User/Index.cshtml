@@ -23,7 +23,7 @@
                             @if (ViewBag.UserGroup == 1) {
                                 <input type="submit" class="btn btn-block btn-dark" value="Administrators cannot delete themselves" disabled="disabled" />
                             } else {
-                                <input type="submit" class="btn btn-block btn-dark" value="Delete account (WIP)" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Delete account" asp-controller="User" asp-action="AccountDelete" />
                             }
                         </form>
                     </div>

@@ -58,6 +58,33 @@ namespace E_hurtownia.Controllers {
             return View();
         }
 
+        public IActionResult AccountDelete() { // ACTION - ACCOUNT DELETION PROCEDURE
+            if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
+                string usernameToDelete = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+                List<Users> accountsToDelete = databaseContext.Users.Where(user => user.Login == usernameToDelete).ToList();
+
+                if (accountsToDelete.Count() == 1) {
+                    Users selectedAccount = accountsToDelete.First();
+
+                    databaseContext.Users.Remove(selectedAccount);
+                    databaseContext.SaveChanges();
+
+                    Response.Cookies.Delete("COOKIE_LOGGED_USERNAME");
+                    return RedirectToAction("Index", "User");
+                } else {
+                    TempData["ErrorHeader"] = "Multiple accounts";
+                    TempData["ErrorMessage"] = "Encountered multiple user accounts with the same username, please fix this error manually in database";
+
+                    return RedirectToAction("Error", "User");
+                }
+            } else {
+                TempData["ErrorHeader"] = "Session expired";
+                TempData["ErrorMessage"] = "User session has expired, please try signing in again";
+
+                return RedirectToAction("Error", "User");
+            }
+        }
+
         public IActionResult Logout() { // ACTION - LOGOUT PROCEDURE
             Response.Cookies.Delete("COOKIE_LOGGED_USERNAME");
 
