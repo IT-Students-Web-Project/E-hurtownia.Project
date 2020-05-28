@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewData["Title"] = "Users list";
+}
+
+<h1>Users list</h1>
+<h5>Showing all registered users in database</h5>
+<h5>Currently, there are @ViewBag.Users.Count registered accounts</h5>
+
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Account ID</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Group ID</th>
+            <th>Group name</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Users selectedUser in ViewBag.Users) {
+            <tr>
+                <td>
+                    @selectedUser.IdUser
+                </td>
+                <td>
+                    @selectedUser.Login
+                </td>
+                <td>
+                    @selectedUser.Password
+                </td>
+                <td>
+                    @selectedUser.FkGroup
+                </td>
+                <td>
+                    @{
+                        List<Groups> groups = ViewBag.Groups;
+                        Groups userGroup = groups.Where(group => group.IdGroup == selectedUser.FkGroup).ToList().First();
+                    }
+
+                    @userGroup.Name
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section CheckUserLogged {
+    @if (ViewBag.COOKIE_LOGGED_USERNAME == null) {
+        <form method="post" class="form-inline">
+            <input type="submit" class="btn btn-primary btn-outline-primary" value="Sign in / Sign up" asp-controller="User" asp-action="Login" />
+        </form>
+    } else {
+        <form method="post" class="form-inline">
+            <label class="text-light">Logged in as&nbsp;<label class="text-info border-right">@ViewBag.COOKIE_LOGGED_USERNAME&nbsp;</label></label>&nbsp;
+            <a class="text-danger" asp-controller="User" asp-action="Logout">Log out</a>
+        </form>
+    }
+}
