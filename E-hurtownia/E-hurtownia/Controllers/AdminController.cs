@@ -37,5 +37,79 @@ namespace E_hurtownia.Controllers {
                 return RedirectToAction("Error", "User");
             }
         }
+
+        public IActionResult UsersListAction_DELETE(int id) { // Deleting account from admin users list
+            List<Users> usersToDelete = databaseContext.Users.Where(user => user.IdUser == id).ToList();
+
+            if (usersToDelete.Count == 1) {
+                Users selectedAccount = usersToDelete.First();
+
+                databaseContext.Users.Remove(selectedAccount);
+                databaseContext.SaveChanges();
+            } else {
+                TempData["ErrorHeader"] = "Multiple accounts";
+                TempData["ErrorMessage"] = "Encountered multiple user accounts with the same username, please fix this error manually in database";
+
+                return RedirectToAction("Error", "User");
+            }
+
+            return RedirectToAction("UsersList", "Admin");
+        }
+
+        public IActionResult UsersListAction_MAKE_ADMIN(int id) { // Setting user group to ADMINS
+            List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
+            Users selectedAccount = usersToRegroup.First();
+
+            databaseContext.Users.Remove(selectedAccount);
+            databaseContext.SaveChanges();
+            
+            selectedAccount.FkGroup = 1;
+            databaseContext.Users.Add(selectedAccount);
+            databaseContext.SaveChanges();
+
+            return RedirectToAction("UsersList", "Admin");
+        }
+
+        public IActionResult UsersListAction_MAKE_CUSTOMER(int id) { // Setting user group to CUSTOMERS
+            List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
+            Users selectedAccount = usersToRegroup.First();
+
+            databaseContext.Users.Remove(selectedAccount);
+            databaseContext.SaveChanges();
+
+            selectedAccount.FkGroup = 2;
+            databaseContext.Users.Add(selectedAccount);
+            databaseContext.SaveChanges();
+
+            return RedirectToAction("UsersList", "Admin");
+        }
+
+        public IActionResult UsersListAction_MAKE_STOREKEEPER(int id) { // Setting user group to STOREKEEPERS
+            List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
+            Users selectedAccount = usersToRegroup.First();
+
+            databaseContext.Users.Remove(selectedAccount);
+            databaseContext.SaveChanges();
+
+            selectedAccount.FkGroup = 3;
+            databaseContext.Users.Add(selectedAccount);
+            databaseContext.SaveChanges();
+
+            return RedirectToAction("UsersList", "Admin");
+        }
+
+        public IActionResult UsersListAction_MAKE_OFFERENT(int id) { // Setting user group to OFFERENTS
+            List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
+            Users selectedAccount = usersToRegroup.First();
+
+            databaseContext.Users.Remove(selectedAccount);
+            databaseContext.SaveChanges();
+
+            selectedAccount.FkGroup = 4;
+            databaseContext.Users.Add(selectedAccount);
+            databaseContext.SaveChanges();
+
+            return RedirectToAction("UsersList", "Admin");
+        }
     }
 }
