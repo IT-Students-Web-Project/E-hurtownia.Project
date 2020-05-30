@@ -2,7 +2,7 @@
     ViewData["Title"] = "Strona główna";
 }
 
-<div class="container">
+<div class="container col-12">
     <div class="row">
         <div class="col">
             <h1>E-Wholesale Project</h1>
@@ -10,9 +10,9 @@
         </div>
 
         @if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
-            <div class="col-4 ml-3">
+            <div class="col-3 ml-3">
                 <div class="row">
-                    <div class="col bg-secondary">
+                    <div class="col bg-secondary mb-3">
                         <div class="container text-center alert-secondary my-3">
                             User dashboard
                         </div>
@@ -31,7 +31,7 @@
 
                 @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 2) { // Admin or Customer
                     <div class="row">
-                        <div class="col bg-success">
+                        <div class="col bg-success mb-3">
                             <div class="container text-center alert-success my-3">
                                 Customer dashboard
                             </div>
@@ -46,7 +46,7 @@
 
                 @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 4) { // Admin or Offerent
                     <div class="row">
-                        <div class="col bg-warning">
+                        <div class="col bg-warning mb-3">
                             <div class="container text-center alert-warning my-3">
                                 Offerent dashboard
                             </div>
@@ -60,7 +60,7 @@
 
                 @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 3) { // Admin or Storekeeper
                     <div class="row">
-                        <div class="col bg-warning">
+                        <div class="col bg-warning mb-3">
                             <div class="container text-center alert-warning my-3">
                                 Storekeeper dashboard
                             </div>
