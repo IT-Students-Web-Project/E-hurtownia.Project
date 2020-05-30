@@ -29,8 +29,14 @@ namespace E_hurtownia.Controllers {
             // TempData["ErrorHeader"] = "Error header";
             // TempData["ErrorMessage"] = "Error message";
 
-            ViewBag.ErrorHeader = (string) TempData["ErrorHeader"];
-            ViewBag.ErrorMessage = (string) TempData["ErrorMessage"];
+            string errorHeader = (string) TempData["ErrorHeader"];
+            string errorMessage = (string) TempData["ErrorMessage"];
+
+            ViewBag.ErrorHeader = errorHeader;
+            ViewBag.ErrorMessage = errorMessage;
+
+            TempData["ErrorHeader"] = errorHeader;
+            TempData["ErrorMessage"] = errorMessage;
 
             return View();
         }
