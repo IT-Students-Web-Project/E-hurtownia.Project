@@ -213,6 +213,22 @@ namespace E_hurtownia.Controllers {
                     Status = userStatus
                 });
 
+                int customerId = 1;
+                bool customerActive = false; // Customer status is 'false' by default - cannot buy products - until complete personal data, then the status will be 'true'
+
+                if (databaseContext.Customers.Count() > 0) {
+                    List<Customers> allCustomers = databaseContext.Customers.OrderBy(customer => customer.IdCustomer).ToList();
+                    customerId = allCustomers.Last().IdCustomer + 1;
+                }
+
+                databaseContext.Customers.Add(new Customers() {
+                    IdCustomer = customerId,
+                    FkPerson = null,
+                    FkCompany = null,
+                    FkUser = userId, // Referencing new customer account to this (newly created) user account
+                    Status = customerActive
+                });
+
                 databaseContext.SaveChanges();
                 Response.Cookies.Append("COOKIE_LOGGED_USERNAME", newUsername); // User registered properly, automatically logged in
 
