@@ -10,10 +10,10 @@
 <table class="table table-hover mt-4">
     <thead>
         <tr>
-            <th style="width: 5%">ID</th>
+            <th style="width: 5%">UID</th>
             <th>Username</th>
             <th>Password</th>
-            <th style="width: 10%">Group ID</th>
+            <th style="width: 10%">Group ID (CID)</th>
             <th>Group name</th>
             <th style="width: 35%">Actions</th>
         </tr>
@@ -41,6 +41,22 @@
                     }
 
                     @userGroup.Name
+
+                    @if (selectedUser.FkGroup == 2) { // Showing Customer ID (CID) if the user is registered in CUSTOMERS table (must be also in Customer group)
+                        List<Users> users = ViewBag.Users;
+                        Users currentUser = users.Where(user => user.IdUser == selectedUser.IdUser).ToList().First();
+
+                        List<Customers> allCustomers = ViewBag.Customers;
+                        List<Customers> customersWithCurrentUserID = allCustomers.Where(customer => customer.FkUser == selectedUser.IdUser).ToList();
+
+                        if (customersWithCurrentUserID.Count == 0) { // Current user is registered in CUSTOMERS table
+                            <span><i>(CID null)</i></span>
+                        } else if (customersWithCurrentUserID.Count == 1) {
+                            <span>(CID @customersWithCurrentUserID.First().IdCustomer)</span>
+                        } else {
+                            <span class="text-danger"><i>(multiple CIDs)</i></span>
+                        }
+                    }
                 </td>
                 <td>
                     <form class="form-inline">
