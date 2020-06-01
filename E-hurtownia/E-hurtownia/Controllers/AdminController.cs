@@ -15,6 +15,7 @@ namespace E_hurtownia.Controllers {
                     if (databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First().FkGroup == 1) { // Checking whether user accessed this page is an administrator
                         ViewBag.Users = databaseContext.Users.ToList();
                         ViewBag.Groups = databaseContext.Groups.ToList();
+                        ViewBag.Customers = databaseContext.Customers.ToList();
                         ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
 
                         return View();
@@ -43,7 +44,9 @@ namespace E_hurtownia.Controllers {
 
             if (usersToDelete.Count == 1) {
                 Users selectedAccount = usersToDelete.First();
+                List<Customers> customersToDelete = databaseContext.Customers.Where(customer => customer.FkUser == selectedAccount.IdUser).ToList();
 
+                databaseContext.Customers.RemoveRange(customersToDelete);
                 databaseContext.Users.Remove(selectedAccount);
                 databaseContext.SaveChanges();
             } else {
@@ -59,12 +62,9 @@ namespace E_hurtownia.Controllers {
         public IActionResult UsersListAction_MAKE_ADMIN(int id) { // Setting user group to ADMINS
             List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
             Users selectedAccount = usersToRegroup.First();
-
-            databaseContext.Users.Remove(selectedAccount);
-            databaseContext.SaveChanges();
             
             selectedAccount.FkGroup = 1;
-            databaseContext.Users.Add(selectedAccount);
+            databaseContext.Users.Update(selectedAccount);
             databaseContext.SaveChanges();
 
             return RedirectToAction("UsersList", "Admin");
@@ -74,11 +74,8 @@ namespace E_hurtownia.Controllers {
             List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
             Users selectedAccount = usersToRegroup.First();
 
-            databaseContext.Users.Remove(selectedAccount);
-            databaseContext.SaveChanges();
-
             selectedAccount.FkGroup = 2;
-            databaseContext.Users.Add(selectedAccount);
+            databaseContext.Users.Update(selectedAccount);
             databaseContext.SaveChanges();
 
             return RedirectToAction("UsersList", "Admin");
@@ -88,11 +85,8 @@ namespace E_hurtownia.Controllers {
             List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
             Users selectedAccount = usersToRegroup.First();
 
-            databaseContext.Users.Remove(selectedAccount);
-            databaseContext.SaveChanges();
-
             selectedAccount.FkGroup = 3;
-            databaseContext.Users.Add(selectedAccount);
+            databaseContext.Users.Update(selectedAccount);
             databaseContext.SaveChanges();
 
             return RedirectToAction("UsersList", "Admin");
@@ -102,11 +96,8 @@ namespace E_hurtownia.Controllers {
             List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
             Users selectedAccount = usersToRegroup.First();
 
-            databaseContext.Users.Remove(selectedAccount);
-            databaseContext.SaveChanges();
-
             selectedAccount.FkGroup = 4;
-            databaseContext.Users.Add(selectedAccount);
+            databaseContext.Users.Update(selectedAccount);
             databaseContext.SaveChanges();
 
             return RedirectToAction("UsersList", "Admin");
