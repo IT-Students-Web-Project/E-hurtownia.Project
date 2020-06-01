@@ -2,23 +2,33 @@
     ViewData["Title"] = "Strona główna";
 }
 
-<div class="container">
+<div class="container col-12">
     <div class="row">
         <div class="col">
             <h1>E-Wholesale Project</h1>
             <h4>Project description on main page, to be continued</h4>
+
+            @if (ViewBag.PasswordChanged != null) {
+                <div class="alert alert-success alert-dismissible fade show my-3" role="alert">
+                    Password changed successfully!
+
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
         </div>
 
         @if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
-            <div class="col-4 ml-3">
+            <div class="col-3 ml-3">
                 <div class="row">
-                    <div class="col bg-secondary">
+                    <div class="col bg-secondary mb-3">
                         <div class="container text-center alert-secondary my-3">
                             User dashboard
                         </div>
 
                         <form class="form-group">
-                            <input type="submit" class="btn btn-block btn-dark" value="Change password (WIP)" />
+                            <input type="submit" class="btn btn-block btn-dark" value="Change password" asp-controller="User" asp-action="ChangePassword" />
 
                             @if (ViewBag.UserGroup == 1) {
                                 <input type="submit" class="btn btn-block btn-dark" value="Administrators cannot delete themselves" disabled="disabled" />
@@ -31,7 +41,7 @@
 
                 @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 2) { // Admin or Customer
                     <div class="row">
-                        <div class="col bg-success">
+                        <div class="col bg-success mb-3">
                             <div class="container text-center alert-success my-3">
                                 Customer dashboard
                             </div>
@@ -46,7 +56,7 @@
 
                 @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 4) { // Admin or Offerent
                     <div class="row">
-                        <div class="col bg-warning">
+                        <div class="col bg-warning mb-3">
                             <div class="container text-center alert-warning my-3">
                                 Offerent dashboard
                             </div>
@@ -60,7 +70,7 @@
 
                 @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 3) { // Admin or Storekeeper
                     <div class="row">
-                        <div class="col bg-warning">
+                        <div class="col bg-warning mb-3">
                             <div class="container text-center alert-warning my-3">
                                 Storekeeper dashboard
                             </div>
