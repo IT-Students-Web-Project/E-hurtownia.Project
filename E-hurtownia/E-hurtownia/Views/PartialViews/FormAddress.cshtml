@@ -63,7 +63,7 @@
             @if (ViewBag.Address is Addresses && ViewBag.Address != null) {
                 <input class="form-control" type="text" value="@ViewBag.Address.City" name="address-city" />
             } else {
-                <input class="form-control" type="text" name="address-city" placeholder="null" />
+                <input class="form-control" type="text" name="address-city" />
             }
 
             @if (ViewBag.AddressResult_InvalidCity != null) {
