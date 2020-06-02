@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewData["Title"] = "Update storehouse address";
+}
+
+<h1>Update address</h1>
+<h4>Change all desired values in address data and confirm</h4>
+<h5>Updating address with ID @ViewBag.Address.IdAddress</h5>
+
+<div class="container col-12 my-5">
+    <div class="row">
+        <div class="col-4">
+            <form method="post">
+                @{
+                    await Html.RenderPartialAsync("~/Views/PartialViews/FormAddress.cshtml");
+                }
+
+                <input class="btn btn-primary mr-3" type="submit" value="Confirm update" asp-controller="Admin" asp-action="StorehousesListAction_UPDATE_ADDRESS_CHECK" asp-route-id="@ViewBag.Address.IdAddress" />
+                <input class="btn btn-secondary" type="submit" value="Cancel" asp-controller="Admin" asp-action="StorehousesList" />
+            </form>
+        </div>
+    </div>
+</div>
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}

@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Storehouses list";
+}
+
+<h1>Storehouses list</h1>
+<h5>Showing all registered storehouses in database</h5>
+<h5>Currently, there are @ViewBag.Storehouses.Count registered storehouses</h5>
+
+<table class="table table-hover mt-4">
+    <thead>
+        <tr>
+            <th style="width: 15%">Storehouse ID</th>
+            <th style="width: 15%">Address ID</th>
+            <th>Full address</th>
+            <th class="text-center" style="width: 10%">Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Storehouses selectedStorehouse in ViewBag.Storehouses) {
+            <tr>
+                <td>
+                    @selectedStorehouse.IdStorehouse
+                </td>
+                <td>
+                    @selectedStorehouse.FkAddress
+                </td>
+                <td>
+                    @{
+                        List<Addresses> addressesList = ViewBag.Addresses;
+                    }
+
+                    @if (addressesList.Count > 0) {
+                        Addresses selectedAddress = addressesList.Where(address => address.IdAddress == selectedStorehouse.FkAddress).Single(); // Single storehouse MUST have exactly one address associated
+                        @selectedAddress.Street
+
+                        @if (selectedAddress.ApartmentNum != null) {
+                            <span>@selectedAddress.BuildingNum/@selectedAddress.ApartmentNum,</span>
+                        } else {
+                            <span>@selectedAddress.BuildingNum,</span>
+                        }
+
+                        <span>@selectedAddress.PostalCode</span>
+                        <span>@selectedAddress.City,</span>
+                        <span>@selectedAddress.Country</span>
+                    }
+                </td>
+                <td>
+                    <form class="form-inline justify-content-center">
+                        @if (selectedStorehouse.Status == true) {
+                            <input class="form-control" type="checkbox" disabled="disabled" checked="checked" />
+                        } else {
+                            <input class="form-control" type="checkbox" disabled="disabled" />
+                        }
+                    </form>
+                </td>
+                <td>
+                    <form class="form-inline">
+                        <input class="btn btn-sm btn-danger" type="submit" value="Delete" asp-controller="Admin" asp-action="StorehousesListAction_DELETE" asp-route-id="@selectedStorehouse.IdStorehouse" />
+                        <input class="btn btn-sm btn-warning ml-2" type="submit" value="Update address" asp-controller="Admin" asp-action="StorehousesListAction_UPDATE_ADDRESS" asp-route-id="@selectedStorehouse.FkAddress" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<form>
+    <input class="btn btn-primary btn-block" type="button" value="Add new storehouse" />
+</form>
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}
