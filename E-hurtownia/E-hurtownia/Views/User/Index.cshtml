@@ -30,7 +30,7 @@
                         <form class="form-group">
                             <input type="submit" class="btn btn-block btn-dark" value="Change password" asp-controller="User" asp-action="ChangePassword" />
 
-                            @if (ViewBag.UserGroup == 1) {
+                            @if (ViewBag.UserGroup == 1) { // All users
                                 <input type="submit" class="btn btn-block btn-dark" value="Administrators cannot delete themselves" disabled="disabled" />
                             } else {
                                 <input type="submit" class="btn btn-block btn-dark" value="Delete account" asp-controller="User" asp-action="AccountDelete" />
@@ -45,7 +45,7 @@
                             <div class="container text-center alert-success my-3">
                                 Customer dashboard
                             </div>
-                        
+
                             <form class="form-group">
                                 <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" />
                                 <input type="submit" class="btn btn-block btn-dark" value="Change address (WIP)" />
@@ -92,6 +92,7 @@
 
                             <form class="form-group">
                                 <input type="submit" class="btn btn-block btn-dark" value="Manage users & accounts" asp-controller="Admin" asp-action="UsersList" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage storehouses" asp-controller="Admin" asp-action="StorehousesList" />
                             </form>
                         </div>
                     </div>
@@ -102,14 +103,7 @@
 </div>
 
 @section CheckUserLogged {
-    @if (ViewBag.COOKIE_LOGGED_USERNAME == null) {
-        <form method="post" class="form-inline">
-            <input type="submit" class="btn btn-primary btn-outline-primary" value="Sign in / Sign up" asp-controller="User" asp-action="Login" />
-        </form>
-    } else {
-        <form method="post" class="form-inline">
-            <label class="text-light">Logged in as&nbsp;<label class="text-info border-right">@ViewBag.COOKIE_LOGGED_USERNAME&nbsp;</label></label>&nbsp;
-            <a class="text-danger" asp-controller="User" asp-action="Logout">Log out</a>
-        </form>
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
     }
 }
