@@ -66,8 +66,8 @@
     </tbody>
 </table>
 
-<form>
-    <input class="btn btn-primary btn-block" type="button" value="Add new storehouse" />
+<form method="post">
+    <input class="btn btn-primary btn-block" type="submit" value="Add new storehouse" asp-controller="Admin" asp-action="StorehousesListAction_CREATE" />
 </form>
 
 @section CheckUserLogged {
