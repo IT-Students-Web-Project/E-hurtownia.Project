@@ -17,10 +17,18 @@ namespace E_hurtownia.Controllers {
             if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
                 Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();
                 ViewBag.UserGroup = currentUser.FkGroup;
+                
+                if (databaseContext.Customers.Where(customer => customer.FkUser == currentUser.IdUser).Count() > 0) {
+                    ViewBag.MeCustomer = databaseContext.Customers.Where(customer => customer.FkUser == currentUser.IdUser).Single();
+                }
             }
 
             if (TempData["PasswordChanged"] != null) {
                 ViewBag.PasswordChanged = true;
+            }
+
+            if (TempData["AddressChanged"] != null) {
+                ViewBag.AddressChanged = true;
             }
 
             return View();
@@ -378,6 +386,93 @@ namespace E_hurtownia.Controllers {
                 databaseContext.SaveChanges();
 
                 TempData["PasswordChanged"] = true;
+                return RedirectToAction("Index", "User");
+            }
+        }
+
+        public IActionResult ChangeAddress() {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
+            if (databaseContext.Users.Count() > 0) {
+                Users meUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single();
+                Customers meCustomer = databaseContext.Customers.Where(customer => customer.FkUser == meUser.IdUser).Single();
+                Persons mePerson = databaseContext.Persons.Where(person => person.IdPerson == meCustomer.FkPerson).Single();
+                Addresses myAddress = databaseContext.Addresses.Where(address => address.IdAddress == mePerson.FkAddress).Single();
+
+                TempData["UpdatedAddressID"] = myAddress.IdAddress;
+                ViewBag.Address = myAddress;
+            }
+
+            if (TempData["AddressResult_InvalidStreet"] != null) ViewBag.AddressResult_InvalidStreet = true;
+            if (TempData["AddressResult_InvalidBuildingNum"] != null) ViewBag.AddressResult_InvalidBuildingNum = true;
+            if (TempData["AddressResult_InvalidCity"] != null) ViewBag.AddressResult_InvalidCity = true;
+            if (TempData["AddressResult_InvalidPostalCode"] != null) ViewBag.AddressResult_InvalidPostalCode = true;
+            if (TempData["AddressResult_InvalidCountry"] != null) ViewBag.AddressResult_InvalidCountry = true;
+
+            return View();
+        }
+
+        public IActionResult ChangeAddressCheck() {
+            string addressStreet = "";
+            int addressBuildingNum = -1;
+
+            #nullable enable
+            int? addressApartmentNum = null;
+            #nullable disable
+
+            string addressCity = "";
+            string addressPostalCode = "";
+            string addressCountry = "";
+
+            if (Request.HasFormContentType == true) {
+                addressStreet = Request.Form["address-street"];
+                addressCity = Request.Form["address-city"];
+                addressPostalCode = Request.Form["address-postal"];
+                addressCountry = Request.Form["address-country"];
+
+                if (Request.Form["address-bnum"].ToString() != String.Empty) {
+                    addressBuildingNum = Int32.Parse(Request.Form["address-bnum"]);
+                }
+
+                if (Request.Form["address-anum"].ToString() != String.Empty) {
+                    addressApartmentNum = Int32.Parse(Request.Form["address-anum"]);
+                }
+            } else {
+                TempData["ErrorHeader"] = "Data transfer error";
+                TempData["ErrorMessage"] = "Did not received any data, form is empty";
+
+                return RedirectToAction("Error", "User");
+            }
+
+            bool invalidStreet = (addressStreet.Length < 5 || addressStreet.Length > 60);
+            bool invalidBuildingNum = (addressBuildingNum < 0);
+            bool invalidCity = (addressCity.Length < 5 || addressCity.Length > 30);
+            bool invalidPostalCode = (addressPostalCode.Length < 5 || addressPostalCode.Length > 30);
+            bool invalidCountry = (addressCountry.Length < 3 || addressCountry.Length > 30);
+
+            if (invalidStreet == true || invalidBuildingNum == true || invalidCity == true || invalidPostalCode == true || invalidCountry == true) {
+                if (invalidStreet) TempData["AddressResult_InvalidStreet"] = true;
+                if (invalidBuildingNum) TempData["AddressResult_InvalidBuildingNum"] = true;
+                if (invalidCity) TempData["AddressResult_InvalidCity"] = true;
+                if (invalidPostalCode) TempData["AddressResult_InvalidPostalCode"] = true;
+                if (invalidCountry) TempData["AddressResult_InvalidCountry"] = true;
+
+                return RedirectToAction("ChangeAddress", "User");
+            } else {
+                int updatedAddressID = (int) TempData["UpdatedAddressID"];
+                Addresses updatedAddress = databaseContext.Addresses.Where(address => address.IdAddress == updatedAddressID).Single();
+
+                updatedAddress.Street = addressStreet;
+                updatedAddress.BuildingNum = addressBuildingNum;
+                updatedAddress.ApartmentNum = addressApartmentNum;
+                updatedAddress.City = addressCity;
+                updatedAddress.PostalCode = addressPostalCode;
+                updatedAddress.Country = addressCountry;
+
+                databaseContext.Addresses.Update(updatedAddress);
+                databaseContext.SaveChanges();
+
+                TempData["AddressChanged"] = true;
                 return RedirectToAction("Index", "User");
             }
         }
