@@ -1,0 +1,56 @@
+﻿<!--
+    PARTIAL VIEW - GENERIC PERSONAL DATA FORM
+
+    a) ViewBag.Person - optional parameter (Person object from database - table PERSONS)
+    b) ViewBag.PersonResult - optional parameter (object with strings, errors on invalid filled form)
+-->
+
+<div class="form-group">
+    <label>First name</label>
+
+    @if (ViewBag.Person is Persons && ViewBag.Person != null) {
+        <input class="form-control" type="text" value="@ViewBag.Person.Firstname" name="person-firstname" />
+    } else {
+        <input class="form-control" type="text" name="person-firstname" />
+    }
+
+    @if (ViewBag.PersonResult_InvalidFirstname != null) {
+        <small class="text-danger">Invalid first name, too short or too long</small>
+    } else {
+        <small>Enter your first name, between 5 and 60 characters</small>
+    }
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="form-group">
+            <label>Last name</label>
+
+            @if (ViewBag.Person is Persons && ViewBag.Person != null) {
+                <input class="form-control" type="text" value="@ViewBag.Person.Lastname" name="person-lastname" />
+            } else {
+                <input class="form-control" type="text" name="person-lastname" />
+            }
+
+            @if (ViewBag.PersonResult_InvalidLastname != null) {
+                <small class="text-danger">Invalid last name, must be between 5 and 60 characters</small>
+            } else {
+                <small>Enter your last name (from 5 to 60 characters)</small>
+            }
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="form-group">
+            <label>Sex</label>
+
+            <select class="form-control" name="person-sex">
+                <option value="F">F - Female</option>
+                <option value="M">M - Male</option>
+                <option value="O">O - Other (undefined)</option>
+            </select>
+
+            <small>Select your sex</small>
+        </div>
+    </div>
+</div>

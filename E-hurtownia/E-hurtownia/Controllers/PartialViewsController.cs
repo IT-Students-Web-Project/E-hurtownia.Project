@@ -10,6 +10,10 @@ namespace E_hurtownia.Controllers {
             return PartialView();
         }
 
+        public IActionResult FormPerson() {
+            return PartialView();
+        }
+
         public IActionResult NavBarUser() {
             return PartialView();
         }
