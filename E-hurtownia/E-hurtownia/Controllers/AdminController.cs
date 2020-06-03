@@ -142,21 +142,20 @@ namespace E_hurtownia.Controllers {
         }
 
         public IActionResult UsersListAction_DELETE(int id) { // Deleting account (from admin users list level)
-            List<Users> usersToDelete = databaseContext.Users.Where(user => user.IdUser == id).ToList();
+            Users deletedUser = databaseContext.Users.Where(user => user.IdUser == id).Single();
 
-            if (usersToDelete.Count == 1) {
-                Users selectedAccount = usersToDelete.First();
-                List<Customers> customersToDelete = databaseContext.Customers.Where(customer => customer.FkUser == selectedAccount.IdUser).ToList();
+            if (databaseContext.Customers.Where(customer => customer.FkUser == id).Count() > 0) {
+                Customers deletedCustomer = databaseContext.Customers.Where(customer => customer.FkUser == id).Single();
+                Persons deletedPerson = databaseContext.Persons.Where(person => person.IdPerson == deletedCustomer.FkPerson).Single();
+                Addresses deletedAddress = databaseContext.Addresses.Where(address => address.IdAddress == deletedPerson.FkAddress).Single();
 
-                databaseContext.Customers.RemoveRange(customersToDelete);
-                databaseContext.Users.Remove(selectedAccount);
-                databaseContext.SaveChanges();
-            } else {
-                TempData["ErrorHeader"] = "Multiple accounts";
-                TempData["ErrorMessage"] = "Encountered multiple user accounts with the same username, please fix this error manually in database";
-
-                return RedirectToAction("Error", "User");
+                databaseContext.Customers.Remove(deletedCustomer);
+                databaseContext.Persons.Remove(deletedPerson);
+                databaseContext.Addresses.Remove(deletedAddress);
             }
+
+            databaseContext.Users.Remove(deletedUser);
+            databaseContext.SaveChanges();
 
             return RedirectToAction("UsersList", "Admin");
         }
