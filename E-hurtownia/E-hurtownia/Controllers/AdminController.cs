@@ -208,8 +208,31 @@ namespace E_hurtownia.Controllers {
             return CheckAdminRights(() => {
                 ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
                 ViewBag.Addresses = databaseContext.Addresses.ToList();
+                ViewBag.Customers = databaseContext.Customers.ToList();
+                ViewBag.Persons = databaseContext.Persons.ToList();
                 ViewBag.Storehouses = databaseContext.Storehouses.ToList();
+                ViewBag.Storekeepers = databaseContext.Storekeepers.ToList();
+                ViewBag.Users = databaseContext.Users.ToList();
+                
+                Dictionary<int, Persons> storekeeperUserDictionary = new Dictionary<int, Persons>();
+                List<Users> storekeeperUserList = databaseContext.Users.Where(user => user.FkGroup == 3).OrderBy(user => user.IdUser).ToList();
 
+                foreach (Users storekeeperUser in storekeeperUserList) {
+                    int userID = storekeeperUser.IdUser;
+                    Persons userPerson = null;
+
+                    if (databaseContext.Customers.Where(customer => customer.FkUser == userID).Count() > 0) {
+                        int? userPersonID = databaseContext.Customers.Where(customer => customer.FkUser == userID).Single().FkPerson;
+                        
+                        if (userPersonID != null) {
+                            userPerson = databaseContext.Persons.Where(person => person.IdPerson == userPersonID).Single();
+                        }
+                    }
+
+                    storekeeperUserDictionary.Add(userID, userPerson);
+                }
+
+                ViewBag.Userlist = storekeeperUserDictionary;
                 return View();
             });
         }
@@ -260,6 +283,39 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult StorehousesListAction_CREATE_CHECK() {
             return CheckStorehouseAddressForm("StorehousesListAction_CREATE", "Admin", null);
+        }
+
+        public IActionResult StorehousesListAction_ADD_STOREKEEPER() { // ACTION - ADDING STOREKEEPER TO STOREHOUSE PROCEDURE
+            int newStorekeeperID = -1;
+            int selectedStorehouseID = -1;
+
+            if (Request.HasFormContentType == true) {
+                if (Request.Form["selected-user"].ToString() != String.Empty) {
+                    newStorekeeperID = Int32.Parse(Request.Form["selected-user"]);
+                }
+
+                if (Request.Form["selected-storehouse"].ToString() != String.Empty) {
+                    selectedStorehouseID = Int32.Parse(Request.Form["selected-storehouse"]);
+                }
+            } else {
+                TempData["ErrorHeader"] = "Data transfer error";
+                TempData["ErrorMessage"] = "Did not received any data, form is empty";
+
+                return RedirectToAction("Error", "User");
+            }
+
+            Storekeepers newStorekeeper = new Storekeepers {
+                IdStorekeeper = (databaseContext.Storekeepers.Count() > 0) ? databaseContext.Storekeepers.OrderBy(storekeeper => storekeeper.IdStorekeeper).Last().IdStorekeeper + 1 : 1,
+                FkStorehouse = selectedStorehouseID,
+                FkUser = newStorekeeperID
+            };
+
+            if (databaseContext.Storekeepers.Where(storekeeper => storekeeper.FkStorehouse == selectedStorehouseID).Where(storekeeper => storekeeper.FkUser == newStorekeeperID).Count() == 0) {
+                databaseContext.Storekeepers.Add(newStorekeeper);
+                databaseContext.SaveChanges();
+            }
+
+            return RedirectToAction("StorehousesList", "Admin");
         }
     }
 }
