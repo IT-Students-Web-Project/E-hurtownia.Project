@@ -5,21 +5,21 @@
     b) ViewBag.AddressResult - optional parameter (object with strings, errors on invalid filled form)
 -->
 
-    <div class="form-group">
-        <label>Street</label>
+<div class="form-group">
+    <label>Street</label>
 
-        @if (ViewBag.Address is Addresses && ViewBag.Address != null) {
-            <input class="form-control" type="text" value="@ViewBag.Address.Street" name="address-street" />
-        } else {
-            <input class="form-control" type="text" name="address-street" />
-        }
+    @if (ViewBag.Address is Addresses && ViewBag.Address != null) {
+        <input class="form-control" type="text" value="@ViewBag.Address.Street" name="address-street" />
+    } else {
+        <input class="form-control" type="text" name="address-street" />
+    }
 
-        @if (ViewBag.AddressResult_InvalidStreet != null) {
-            <small class="text-danger">Invalid street value, too short or too long</small>
-        } else {
-            <small>Enter address street, between 5 and 60 characters</small>
-        }
-    </div>
+    @if (ViewBag.AddressResult_InvalidStreet != null) {
+        <small class="text-danger">Invalid street value, too short or too long</small>
+    } else {
+        <small>Enter address street, between 5 and 60 characters</small>
+    }
+</div>
 
 <div class="row">
     <div class="col">
