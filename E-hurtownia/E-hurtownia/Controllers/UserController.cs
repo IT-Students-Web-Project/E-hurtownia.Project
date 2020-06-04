@@ -267,7 +267,7 @@ namespace E_hurtownia.Controllers {
             bool invalidCity = (addressCity.Length < 5 || addressCity.Length > 30);
             bool invalidPostalCode = (addressPostalCode.Length < 5 || addressPostalCode.Length > 30);
             bool invalidCountry = (addressCountry.Length < 3 || addressCountry.Length > 30);
-            bool invalidFirstname = (personalFirstname.Length < 5 || personalFirstname.Length > 60);
+            bool invalidFirstname = (personalFirstname.Length < 3 || personalFirstname.Length > 60);
             bool invalidLastname = (personalLastname.Length < 5 || personalLastname.Length > 60);
 
             if (invalidStreet == true || invalidBuildingNum == true || invalidCity == true || invalidPostalCode == true || invalidCountry == true || invalidFirstname == true || invalidLastname == true) {

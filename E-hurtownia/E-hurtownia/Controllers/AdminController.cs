@@ -140,6 +140,7 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult UsersListAction_DELETE(int id) { // Deleting account (from admin users list level)
             Users deletedUser = databaseContext.Users.Where(user => user.IdUser == id).Single();
+            List<Storekeepers> deletedStorekeepers = databaseContext.Storekeepers.Where(storekeeper => storekeeper.FkUser == deletedUser.IdUser).ToList();
 
             if (databaseContext.Customers.Where(customer => customer.FkUser == id).Count() > 0) {
                 Customers deletedCustomer = databaseContext.Customers.Where(customer => customer.FkUser == id).Single();
@@ -149,6 +150,10 @@ namespace E_hurtownia.Controllers {
                 databaseContext.Customers.Remove(deletedCustomer);
                 databaseContext.Persons.Remove(deletedPerson);
                 databaseContext.Addresses.Remove(deletedAddress);
+            }
+
+            if (deletedStorekeepers.Count() > 0) {
+                databaseContext.Storekeepers.RemoveRange(deletedStorekeepers);
             }
 
             databaseContext.Users.Remove(deletedUser);
@@ -311,6 +316,15 @@ namespace E_hurtownia.Controllers {
                 databaseContext.Storekeepers.Add(newStorekeeper);
                 databaseContext.SaveChanges();
             }
+
+            return RedirectToAction("StorehousesList", "Admin");
+        }
+
+        public IActionResult StorehousesListAction_DELETE_STOREKEEPER(int id) {
+            Storekeepers deletedStorekeeper = databaseContext.Storekeepers.Where(storekeeper => storekeeper.IdStorekeeper == id).Single();
+
+            databaseContext.Storekeepers.Remove(deletedStorekeeper);
+            databaseContext.SaveChanges();
 
             return RedirectToAction("StorehousesList", "Admin");
         }

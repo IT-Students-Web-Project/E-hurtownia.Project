@@ -3,14 +3,15 @@
 }
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 <script type="text/javascript">
     function toggleStorekeepers(targetID) {
         if (document.getElementById(targetID).classList.contains("d-none") == false) {
-            setTimeout(function () {
+            // setTimeout(function () {
                 document.getElementById(targetID).classList.add("d-none");
-            }, 300);
+            // }, 300);
         } else {
             document.getElementById(targetID).classList.remove("d-none");
         }
@@ -132,8 +133,8 @@
 
             <tr class="d-none" id="SID_ROW_@selectedStorehouse.IdStorehouse">
                 <td colspan="5">
-                    <div class="collapse" id="SID_@selectedStorehouse.IdStorehouse">
-                        <div class="card card-body bg-dark text-light">
+                    <div style="transition: none !important" class="collapse" id="SID_@selectedStorehouse.IdStorehouse">
+                        <div class="card card-body text-light bg-dark">
                             <table class="table table-dark table-hover">
                                 <thead>
                                     <tr>
@@ -141,6 +142,7 @@
                                         <th style="width: 15%">User ID</th>
                                         <th style="width: 20%">Person ID</th>
                                         <th>Storekeeper name</th>
+                                        <th style="width: 15%">Delete storekeeper</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -177,6 +179,11 @@
                                                         </td>
                                                         <td>
                                                             <i>user has no personal data</i>
+                                                        </td>
+                                                        <td>
+                                                            <form method="post">
+                                                                <input type="submit" class="btn btn-danger btn-sm" value="Delete from storehouse" asp-controller="Admin" asp-action="StorehousesListAction_DELETE_STOREKEEPER" asp-route-id="@storekeeper.IdStorekeeper" />
+                                                            </form>
                                                         </td>
                                                     }
                                                 }
