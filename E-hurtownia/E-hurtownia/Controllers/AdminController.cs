@@ -317,5 +317,14 @@ namespace E_hurtownia.Controllers {
 
             return RedirectToAction("StorehousesList", "Admin");
         }
+
+        public IActionResult StorehousesListAction_DELETE_STOREKEEPER(int id) {
+            Storekeepers deletedStorekeeper = databaseContext.Storekeepers.Where(storekeeper => storekeeper.IdStorekeeper == id).Single();
+
+            databaseContext.Storekeepers.Remove(deletedStorekeeper);
+            databaseContext.SaveChanges();
+
+            return RedirectToAction("StorehousesList", "Admin");
+        }
     }
 }
