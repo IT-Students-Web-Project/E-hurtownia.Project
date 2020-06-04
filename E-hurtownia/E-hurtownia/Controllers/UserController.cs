@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using E_hurtownia.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Builder;
 
 namespace E_hurtownia.Controllers {
     public class UserController : Controller {
