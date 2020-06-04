@@ -3,19 +3,29 @@ using Utils;
 
 namespace E_hurtownia.Utils
 {
-    public class ConfigUtils
+    public class ConfigUtil
     {
-        public static string CONFIG_INI_PATH = "config.ini";
-        public static string VERSION_TXT_PATH = "version.txt";
+        public static string Version { get; private set; } = "";
+        public static string ConfigIniPath { get; private set; }
+        
+        public static void SetVersion(string version)
+        {
+            Version = version;
+        }
 
         public static string GetDbConnectionString()
         {
-            return GetValueFromFile(ConfigParams.CONNECTION_STRING, CONFIG_INI_PATH);
+            return GetValueFromFile(ConfigParamKeys.CONNECTION_STRING, ConfigIniPath);
+        }
+
+        internal static void SetConfigIniPath(string path)
+        {
+            ConfigIniPath = path;
         }
 
         public static string GetVersion()
         {
-            return GetValueFromFile(ConfigParams.APP_VERSION, VERSION_TXT_PATH);
+            return Version;
         }
 
         public static string GetValueFromFile(string key, string filePath)
