@@ -13,7 +13,7 @@ namespace E_hurtownia.Utils
             if (config.ContainsKey("connectionString"))
                 return config["connectionString"];
             else
-                throw new Exception("Key 'connectionString' not found in file:" + CONFIG_INI_PATH);
+                throw new Exception("Key: 'connectionString' not found in file:" + CONFIG_INI_PATH);
         }
     }
 }
