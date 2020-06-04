@@ -19,6 +19,10 @@ namespace E_hurtownia.Controllers {
                 ViewBag.UserGroup = currentUser.FkGroup;
             }
 
+            if (TempData["PasswordChanged"] != null) {
+                ViewBag.PasswordChanged = true;
+            }
+
             return View();
         }
 
@@ -29,8 +33,14 @@ namespace E_hurtownia.Controllers {
             // TempData["ErrorHeader"] = "Error header";
             // TempData["ErrorMessage"] = "Error message";
 
-            ViewBag.ErrorHeader = (string) TempData["ErrorHeader"];
-            ViewBag.ErrorMessage = (string) TempData["ErrorMessage"];
+            string errorHeader = (string) TempData["ErrorHeader"];
+            string errorMessage = (string) TempData["ErrorMessage"];
+
+            ViewBag.ErrorHeader = errorHeader;
+            ViewBag.ErrorMessage = errorMessage;
+
+            TempData["ErrorHeader"] = errorHeader;
+            TempData["ErrorMessage"] = errorMessage;
 
             return View();
         }
@@ -203,9 +213,82 @@ namespace E_hurtownia.Controllers {
                     Status = userStatus
                 });
 
+                int customerId = 1;
+                bool customerActive = false; // Customer status is 'false' by default - cannot buy products - until complete personal data, then the status will be 'true'
+
+                if (databaseContext.Customers.Count() > 0) {
+                    List<Customers> allCustomers = databaseContext.Customers.OrderBy(customer => customer.IdCustomer).ToList();
+                    customerId = allCustomers.Last().IdCustomer + 1;
+                }
+
+                databaseContext.Customers.Add(new Customers() {
+                    IdCustomer = customerId,
+                    FkPerson = null,
+                    FkCompany = null,
+                    FkUser = userId, // Referencing new customer account to this (newly created) user account
+                    Status = customerActive
+                });
+
                 databaseContext.SaveChanges();
                 Response.Cookies.Append("COOKIE_LOGGED_USERNAME", newUsername); // User registered properly, automatically logged in
 
+                return RedirectToAction("Index", "User");
+            }
+        }
+
+        public IActionResult ChangePassword() { // ACTION - CHANGE PASSWORD
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
+            if (TempData["CurrentPasswordIncorrect"] != null) {
+                ViewBag.CurrentPasswordIncorrect = true;
+            } else if (TempData["NewPasswordInvalid"] != null) {
+                ViewBag.NewPasswordInvalid = true;
+            } else if (TempData["RepeatPasswordDoNotMatch"] != null) {
+                ViewBag.RepeatPasswordDoNotMatch = true;
+            }
+
+            return View();
+        }
+
+        public IActionResult ChangePasswordConfirm() { // ACTION - CHANGE PASSWORD CHECK & CONFIRM PROCEDURE
+            string oldPassword = "";
+            string newPassword = "";
+            string repeatPassword = "";
+
+            if (Request.HasFormContentType == true) {
+                oldPassword = Request.Form["password-old"];
+                newPassword = Request.Form["password-new"];
+                repeatPassword = Request.Form["password-new-repeat"];
+            } else {
+                TempData["ErrorHeader"] = "Data transfer error";
+                TempData["ErrorMessage"] = "Did not received any data, form is empty";
+
+                return RedirectToAction("Error", "User");
+            }
+
+            Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();
+
+            if (currentUser.Password != oldPassword) {
+                TempData["CurrentPasswordIncorrect"] = true;
+
+                return RedirectToAction("ChangePassword", "User");
+            } else if (newPassword.Length < 5 || newPassword.Length > 30) {
+                TempData["NewPasswordInvalid"] = true;
+
+                return RedirectToAction("ChangePassword", "User");
+            } else if (newPassword != repeatPassword) {
+                TempData["RepeatPasswordDoNotMatch"] = true;
+
+                return RedirectToAction("ChangePassword", "User");
+            } else {
+                databaseContext.Users.Remove(currentUser);
+                databaseContext.SaveChanges();
+
+                currentUser.Password = newPassword;
+                databaseContext.Users.Add(currentUser);
+                databaseContext.SaveChanges();
+
+                TempData["PasswordChanged"] = true;
                 return RedirectToAction("Index", "User");
             }
         }
