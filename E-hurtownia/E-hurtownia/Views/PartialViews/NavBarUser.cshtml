@@ -1,0 +1,16 @@
+﻿<!--
+    PARTIAL VIEW - NAVBAR USER BLOCK
+    
+    a) ViewBag.COOKIE_LOGGED_USERNAME - required parameter (string)
+-->
+
+@if (ViewBag.COOKIE_LOGGED_USERNAME == null) {
+    <form method="post" class="form-inline">
+        <input type="submit" class="btn btn-primary btn-outline-primary" value="Sign in / Sign up" asp-controller="User" asp-action="Login" />
+    </form>
+} else {
+    <form method="post" class="form-inline">
+        <label class="text-light">Logged in as&nbsp;<label class="text-info border-right">@ViewBag.COOKIE_LOGGED_USERNAME&nbsp;</label></label>&nbsp;
+        <a class="text-danger" asp-controller="User" asp-action="Logout">Log out</a>
+    </form>
+}

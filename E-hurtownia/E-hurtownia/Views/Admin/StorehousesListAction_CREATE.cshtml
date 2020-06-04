@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewData["Title"] = "Create new storehouse";
+}
+
+<h1>Create storehouse</h1>
+<h4>Add new storehouse with entered address to database</h4>
+
+<div class="container col-12 my-5">
+    <div class="row">
+        <div class="col-4">
+            <form method="post">
+                @{
+                    await Html.RenderPartialAsync("~/Views/PartialViews/FormAddress.cshtml");
+                }
+
+                <input class="btn btn-primary mr-3" type="submit" value="Create a storehouse" asp-controller="Admin" asp-action="StorehousesListAction_CREATE_CHECK" />
+                <input class="btn btn-secondary" type="submit" value="Cancel" asp-controller="Admin" asp-action="StorehousesList" />
+            </form>
+        </div>
+    </div>
+</div>
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}

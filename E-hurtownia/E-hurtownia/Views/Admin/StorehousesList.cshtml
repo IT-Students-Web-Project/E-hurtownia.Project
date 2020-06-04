@@ -1,0 +1,214 @@
+﻿@{
+    ViewData["Title"] = "Storehouses list";
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<script type="text/javascript">
+    function toggleStorekeepers(targetID) {
+        if (document.getElementById(targetID).classList.contains("d-none") == false) {
+            // setTimeout(function () {
+                document.getElementById(targetID).classList.add("d-none");
+            // }, 300);
+        } else {
+            document.getElementById(targetID).classList.remove("d-none");
+        }
+    }
+
+    $(function () {
+        $(document).on("show.bs.modal", "#addStorekeeperModal", function (event) {
+            var storehouseID = $(event.relatedTarget).data("sid");
+
+            $(this).find(".modal-header").find("h4").text("Add storekeeper to storehouse (ID " + storehouseID + ")");
+            $(this).find(".modal-hidden-selected-storehouse").val(storehouseID);
+        });
+    });
+</script>
+
+<!-- MODAL DIALOG SECTION -->
+
+<div class="modal fade" id="addStorekeeperModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4></h4>
+            </div>
+
+            <form method="post">
+                <div class="modal-body">
+                    Select user to be a Storekeeper of this storehouse
+                </div>
+
+                <input class="modal-hidden-selected-storehouse" type="hidden" name="selected-storehouse" />
+
+                <select class="form-control mb-3" style="width: 90%; margin-left: 5%; margin-right: 5%" name="selected-user">
+                    @foreach (KeyValuePair<int, Persons> storekeeperUser in ViewBag.Userlist) {
+                        @if (storekeeperUser.Value != null) {
+                            <option value="@storekeeperUser.Key">UID @storekeeperUser.Key - @storekeeperUser.Value.Firstname @storekeeperUser.Value.Lastname</option>
+                        } else {
+                            <option class="text-danger" value="@storekeeperUser.Key">UID @storekeeperUser.Key - user has no personal data</option>
+                        }
+                    }
+                </select>
+
+                <div class="modal-footer">
+                    @if (ViewBag.Userlist.Count > 0) {
+                        <input type="submit" class="btn btn-primary" value="Add storekeeper" asp-controller="Admin" asp-action="StorehousesListAction_ADD_STOREKEEPER" />
+                    } else {
+                        <input type="button" class="btn btn-primary" value="Add storekeeper" disabled="disabled" />
+                    }
+
+                    <input type="button" class="btn btn-secondary" value="Cancel" data-dismiss="modal" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- END OF MODAL DIALOG SECTION -->
+
+<h1>Storehouses list</h1>
+<h5>Showing all registered storehouses in database</h5>
+<h5>Currently, there are @ViewBag.Storehouses.Count registered storehouses</h5>
+
+<table class="table table-striped mt-4">
+    <thead>
+        <tr>
+            <th style="width: 10%">Storehouse ID</th>
+            <th style="width: 10%">Address ID</th>
+            <th>Full address</th>
+            <th class="text-center" style="width: 10%">Status</th>
+            <th style="width: 25%">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Storehouses selectedStorehouse in ViewBag.Storehouses) {
+            <tr>
+                <td>
+                    @selectedStorehouse.IdStorehouse
+                </td>
+                <td>
+                    @selectedStorehouse.FkAddress
+                </td>
+                <td>
+                    @{
+                        List<Addresses> addressesList = ViewBag.Addresses;
+                    }
+
+                    @if (addressesList.Count > 0) {
+                        Addresses selectedAddress = addressesList.Where(address => address.IdAddress == selectedStorehouse.FkAddress).Single(); // Single storehouse MUST have exactly one address associated
+                        @selectedAddress.Street
+
+                        @if (selectedAddress.ApartmentNum != null) {
+                            <span>@selectedAddress.BuildingNum/@selectedAddress.ApartmentNum,</span>
+                        } else {
+                            <span>@selectedAddress.BuildingNum,</span>
+                        }
+
+                        <span>@selectedAddress.PostalCode</span>
+                        <span>@selectedAddress.City,</span>
+                        <span>@selectedAddress.Country</span>
+                    }
+                </td>
+                <td>
+                    <form class="form-inline justify-content-center">
+                        @if (selectedStorehouse.Status == true) {
+                            <input class="form-control" type="checkbox" disabled="disabled" checked="checked" />
+                        } else {
+                            <input class="form-control" type="checkbox" disabled="disabled" />
+                        }
+                    </form>
+                </td>
+                <td>
+                    <form class="form-inline">
+                        <input class="btn btn-sm btn-danger" type="submit" value="Delete" asp-controller="Admin" asp-action="StorehousesListAction_DELETE" asp-route-id="@selectedStorehouse.IdStorehouse" />
+                        <input class="btn btn-sm btn-warning ml-2" type="submit" value="Update address" asp-controller="Admin" asp-action="StorehousesListAction_UPDATE_ADDRESS" asp-route-id="@selectedStorehouse.FkAddress" />
+                        <input class="btn btn-sm btn-primary ml-2" type="button" value="Manage storekeepers" data-toggle="collapse" data-target="#SID_@selectedStorehouse.IdStorehouse" onclick="toggleStorekeepers('SID_ROW_@selectedStorehouse.IdStorehouse');" />
+                    </form>
+                </td>
+            </tr>
+
+            <tr class="d-none" id="SID_ROW_@selectedStorehouse.IdStorehouse">
+                <td colspan="5">
+                    <div style="transition: none !important" class="collapse" id="SID_@selectedStorehouse.IdStorehouse">
+                        <div class="card card-body text-light bg-dark">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20%">SID (Storekeepers table)</th>
+                                        <th style="width: 15%">User ID</th>
+                                        <th style="width: 20%">Person ID</th>
+                                        <th>Storekeeper name</th>
+                                        <th style="width: 15%">Delete storekeeper</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (Storekeepers storekeeper in ViewBag.Storekeepers) {
+                                        if (storekeeper.FkStorehouse == selectedStorehouse.IdStorehouse) {
+                                            <tr>
+                                                <td>
+                                                    @storekeeper.IdStorekeeper
+                                                </td>
+                                                <td>
+                                                    @storekeeper.FkUser
+                                                </td>
+                                                @{
+                                                    List<Customers> customerList = ViewBag.Customers;
+                                                    List<Persons> personList = ViewBag.Persons;
+
+                                                    if (customerList.Where(customer => customer.FkUser == storekeeper.FkUser).Count() > 0) {
+                                                        int? mePersonID = customerList.Where(customer => customer.FkUser == storekeeper.FkUser).Single().FkPerson;
+
+                                                        if (mePersonID != null) {
+                                                            string myFirstname = personList.Where(person => person.IdPerson == mePersonID).Single().Firstname;
+                                                            string myLastname = personList.Where(person => person.IdPerson == mePersonID).Single().Lastname;
+
+                                                            <td>
+                                                                @mePersonID
+                                                            </td>
+                                                            <td>
+                                                                @myFirstname @myLastname
+                                                            </td>
+                                                        }
+                                                    } else {
+                                                        <td>
+                                                            <i>user has no personal data</i>
+                                                        </td>
+                                                        <td>
+                                                            <i>user has no personal data</i>
+                                                        </td>
+                                                    }
+
+                                                    <td>
+                                                        <form method="post">
+                                                            <input type="submit" class="btn btn-danger btn-sm" value="Delete from storehouse" asp-controller="Admin" asp-action="StorehousesListAction_DELETE_STOREKEEPER" asp-route-id="@storekeeper.IdStorekeeper" />
+                                                        </form>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+
+                            <input class="btn btn-block btn-success" type="button" value="Add storekeeper" data-toggle="modal" data-sid="@selectedStorehouse.IdStorehouse" data-target="#addStorekeeperModal" />
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<form method="post">
+    <input class="btn btn-primary btn-block" type="submit" value="Add new storehouse" asp-controller="Admin" asp-action="StorehousesListAction_CREATE" />
+</form>
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}

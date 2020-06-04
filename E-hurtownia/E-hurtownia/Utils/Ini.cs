@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Utils
 {
@@ -15,7 +14,7 @@ namespace Utils
         public Ini(string path)
         {
             if (!File.Exists(path))
-                throw new Exception("Nie znaleziono pliku: " + path);
+                throw new Exception("File not found: " + path);
             
             Path = path;
             data = new Dictionary<string, string>();
