@@ -180,12 +180,13 @@
                                                         <td>
                                                             <i>user has no personal data</i>
                                                         </td>
-                                                        <td>
-                                                            <form method="post">
-                                                                <input type="submit" class="btn btn-danger btn-sm" value="Delete from storehouse" asp-controller="Admin" asp-action="StorehousesListAction_DELETE_STOREKEEPER" asp-route-id="@storekeeper.IdStorekeeper" />
-                                                            </form>
-                                                        </td>
                                                     }
+
+                                                    <td>
+                                                        <form method="post">
+                                                            <input type="submit" class="btn btn-danger btn-sm" value="Delete from storehouse" asp-controller="Admin" asp-action="StorehousesListAction_DELETE_STOREKEEPER" asp-route-id="@storekeeper.IdStorekeeper" />
+                                                        </form>
+                                                    </td>
                                                 }
                                             </tr>
                                         }
