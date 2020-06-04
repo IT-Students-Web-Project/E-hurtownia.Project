@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register a new user</h1>
+<h4>Fill the form below with your personal data and confirm</h4>
+
+<div class="container col-12 my-5">
+    <div class="row">
+        <div class="col-5">
+            <form method="post">
+                @{
+                    await Html.RenderPartialAsync("~/Views/PartialViews/FormPerson.cshtml");
+                    await Html.RenderPartialAsync("~/Views/PartialViews/FormAddress.cshtml");
+                }
+
+                <input class="btn btn-primary mr-3" type="submit" value="Complete registration" asp-controller="User" asp-action="RegisterPersonCheck" />
+                <input class="btn btn-secondary" type="submit" value="Cancel" asp-controller="User" asp-action="Index" />
+            </form>
+        </div>
+    </div>
+</div>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using E_hurtownia.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 using Utils;
 
 namespace E_hurtownia.Models
@@ -35,11 +36,13 @@ namespace E_hurtownia.Models
         public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
+        public static readonly ILoggerFactory LoggerFactory =  Microsoft.Extensions.Logging.LoggerFactory.Create(builder => { builder.AddDebug(); });
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(ConfigUtils.GetDbConnectionString());
+                optionsBuilder.UseSqlServer(ConfigUtils.GetDbConnectionString()).UseLoggerFactory(LoggerFactory);
             }
         }
 

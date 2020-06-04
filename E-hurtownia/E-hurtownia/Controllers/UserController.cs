@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using E_hurtownia.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Builder;
 
 namespace E_hurtownia.Controllers {
     public class UserController : Controller {
@@ -17,10 +14,18 @@ namespace E_hurtownia.Controllers {
             if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
                 Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();
                 ViewBag.UserGroup = currentUser.FkGroup;
+                
+                if (databaseContext.Customers.Where(customer => customer.FkUser == currentUser.IdUser).Count() > 0) {
+                    ViewBag.MeCustomer = databaseContext.Customers.Where(customer => customer.FkUser == currentUser.IdUser).Single();
+                }
             }
 
             if (TempData["PasswordChanged"] != null) {
                 ViewBag.PasswordChanged = true;
+            }
+
+            if (TempData["AddressChanged"] != null) {
+                ViewBag.AddressChanged = true;
             }
 
             return View();
@@ -71,22 +76,23 @@ namespace E_hurtownia.Controllers {
         public IActionResult AccountDelete() { // ACTION - ACCOUNT DELETION PROCEDURE
             if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
                 string usernameToDelete = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-                List<Users> accountsToDelete = databaseContext.Users.Where(user => user.Login == usernameToDelete).ToList();
+                Users deletedUser = databaseContext.Users.Where(user => user.Login == usernameToDelete).Single();
 
-                if (accountsToDelete.Count() == 1) {
-                    Users selectedAccount = accountsToDelete.First();
+                if (databaseContext.Customers.Where(customer => customer.FkUser == deletedUser.IdUser).Count() > 0) {
+                    Customers deletedCustomer = databaseContext.Customers.Where(customer => customer.FkUser == deletedUser.IdUser).Single();
+                    Persons deletedPerson = databaseContext.Persons.Where(person => person.IdPerson == deletedCustomer.FkPerson).Single();
+                    Addresses deletedAddress = databaseContext.Addresses.Where(address => address.IdAddress == deletedPerson.FkAddress).Single();
 
-                    databaseContext.Users.Remove(selectedAccount);
-                    databaseContext.SaveChanges();
-
-                    Response.Cookies.Delete("COOKIE_LOGGED_USERNAME");
-                    return RedirectToAction("Index", "User");
-                } else {
-                    TempData["ErrorHeader"] = "Multiple accounts";
-                    TempData["ErrorMessage"] = "Encountered multiple user accounts with the same username, please fix this error manually in database";
-
-                    return RedirectToAction("Error", "User");
+                    databaseContext.Customers.Remove(deletedCustomer);
+                    databaseContext.Persons.Remove(deletedPerson);
+                    databaseContext.Addresses.Remove(deletedAddress);
                 }
+
+                databaseContext.Users.Remove(deletedUser);
+                databaseContext.SaveChanges();
+
+                Response.Cookies.Delete("COOKIE_LOGGED_USERNAME");
+                return RedirectToAction("Index", "User");
             } else {
                 TempData["ErrorHeader"] = "Session expired";
                 TempData["ErrorMessage"] = "User session has expired, please try signing in again";
@@ -194,44 +200,135 @@ namespace E_hurtownia.Controllers {
 
                 return RedirectToAction("Login", "User");
             } else {
-                int userId = 1;
-                int userGroup = 2; // Default group is 2 = CUSTOMER
-                string userLogin = newUsername;
-                string userPassword = newPassword;
-                bool userStatus = true;
+                TempData["register-name"] = newUsername;
+                TempData["register-password"] = newPassword;
 
-                if (databaseContext.Users.Count() > 0) {
-                    List<Users> allUsers = databaseContext.Users.OrderBy(user => user.IdUser).ToList();
-                    userId = allUsers.Last().IdUser + 1;
+                return RedirectToAction("RegisterPerson", "User");
+            }
+        }
+
+        public IActionResult RegisterPerson() { // ACTION - REGISTER PERSONAL FORM
+            if (TempData["AddressResult_InvalidStreet"] != null) ViewBag.AddressResult_InvalidStreet = true;
+            if (TempData["AddressResult_InvalidBuildingNum"] != null) ViewBag.AddressResult_InvalidBuildingNum = true;
+            if (TempData["AddressResult_InvalidCity"] != null) ViewBag.AddressResult_InvalidCity = true;
+            if (TempData["AddressResult_InvalidPostalCode"] != null) ViewBag.AddressResult_InvalidPostalCode = true;
+            if (TempData["AddressResult_InvalidCountry"] != null) ViewBag.AddressResult_InvalidCountry = true;
+
+            if (TempData["PersonResult_InvalidFirstname"] != null) ViewBag.PersonResult_InvalidFirstname = true;
+            if (TempData["PersonResult_InvalidLastname"] != null) ViewBag.PersonResult_InvalidLastname = true;
+
+            return View();
+        }
+
+        public IActionResult RegisterPersonCheck() { // ACTION - REGISTER PERSONAL DATA CHECKING PROCEDURE
+            string newUsername = (string) TempData["register-name"];
+            string newPassword = (string) TempData["register-password"];
+
+            string addressStreet = "";
+            int addressBuildingNum = -1;
+
+            #nullable enable
+            int? addressApartmentNum = null;
+            #nullable disable
+
+            string addressCity = "";
+            string addressPostalCode = "";
+            string addressCountry = "";
+            string personalFirstname = "";
+            string personalLastname = "";
+            string personalSex = "";
+
+            if (Request.HasFormContentType == true) {
+                addressStreet = Request.Form["address-street"];
+                addressCity = Request.Form["address-city"];
+                addressPostalCode = Request.Form["address-postal"];
+                addressCountry = Request.Form["address-country"];
+
+                if (Request.Form["address-bnum"].ToString() != String.Empty) {
+                    addressBuildingNum = Int32.Parse(Request.Form["address-bnum"]);
                 }
 
-                databaseContext.Users.Add(new Users() {
-                    IdUser = userId,
-                    FkGroup = userGroup,
-                    Login = userLogin,
-                    Password = userPassword,
-                    Status = userStatus
-                });
-
-                int customerId = 1;
-                bool customerActive = false; // Customer status is 'false' by default - cannot buy products - until complete personal data, then the status will be 'true'
-
-                if (databaseContext.Customers.Count() > 0) {
-                    List<Customers> allCustomers = databaseContext.Customers.OrderBy(customer => customer.IdCustomer).ToList();
-                    customerId = allCustomers.Last().IdCustomer + 1;
+                if (Request.Form["address-anum"].ToString() != String.Empty) {
+                    addressApartmentNum = Int32.Parse(Request.Form["address-anum"]);
                 }
 
-                databaseContext.Customers.Add(new Customers() {
-                    IdCustomer = customerId,
-                    FkPerson = null,
+                personalFirstname = Request.Form["person-firstname"];
+                personalLastname = Request.Form["person-lastname"];
+                personalSex = Request.Form["person-sex"];
+            } else {
+                TempData["ErrorHeader"] = "Data transfer error";
+                TempData["ErrorMessage"] = "Did not received any data, form is empty";
+
+                return RedirectToAction("Error", "User");
+            }
+
+            bool invalidStreet = (addressStreet.Length < 5 || addressStreet.Length > 60);
+            bool invalidBuildingNum = (addressBuildingNum < 0);
+            bool invalidCity = (addressCity.Length < 5 || addressCity.Length > 30);
+            bool invalidPostalCode = (addressPostalCode.Length < 5 || addressPostalCode.Length > 30);
+            bool invalidCountry = (addressCountry.Length < 3 || addressCountry.Length > 30);
+            bool invalidFirstname = (personalFirstname.Length < 3 || personalFirstname.Length > 60);
+            bool invalidLastname = (personalLastname.Length < 5 || personalLastname.Length > 60);
+
+            if (invalidStreet == true || invalidBuildingNum == true || invalidCity == true || invalidPostalCode == true || invalidCountry == true || invalidFirstname == true || invalidLastname == true) {
+                if (invalidStreet) TempData["AddressResult_InvalidStreet"] = true;
+                if (invalidBuildingNum) TempData["AddressResult_InvalidBuildingNum"] = true;
+                if (invalidCity) TempData["AddressResult_InvalidCity"] = true;
+                if (invalidPostalCode) TempData["AddressResult_InvalidPostalCode"] = true;
+                if (invalidCountry) TempData["AddressResult_InvalidCountry"] = true;
+
+                if (invalidFirstname) TempData["PersonResult_InvalidFirstname"] = true;
+                if (invalidLastname) TempData["PersonResult_InvalidLastname"] = true;
+
+                return RedirectToAction("RegisterPerson", "User");
+            } else {
+                // STAGE 1 - CREATING ADDRESS
+                Addresses customerAddress = new Addresses {
+                    IdAddress = (databaseContext.Addresses.Count() > 0) ? databaseContext.Addresses.OrderBy(address => address.IdAddress).Last().IdAddress + 1 : 1,
+                    Street = addressStreet,
+                    BuildingNum = addressBuildingNum,
+                    ApartmentNum = addressApartmentNum,
+                    City = addressCity,
+                    PostalCode = addressPostalCode,
+                    Country = addressCountry,
+                    Status = true
+                };
+
+                // STAGE 2 - CREATING PERSON
+                Persons customerPerson = new Persons {
+                    IdPerson = (databaseContext.Persons.Count() > 0) ? databaseContext.Persons.OrderBy(person => person.IdPerson).Last().IdPerson + 1 : 1,
+                    Firstname = personalFirstname,
+                    Lastname = personalLastname,
+                    Sex = personalSex,
+                    FkAddress = customerAddress.IdAddress
+                };
+
+                // STAGE 3 - CREATING USER
+                Users customerUser = new Users {
+                    IdUser = (databaseContext.Users.Count() > 0) ? databaseContext.Users.OrderBy(user => user.IdUser).Last().IdUser + 1 : 1,
+                    FkGroup = 2, // By default, the target group is CUSTOMERS
+                    Login = newUsername,
+                    Password = newPassword,
+                    Status = true
+                };
+
+                // STAGE 4 - CREATING CUSTOMER
+                Customers customerObject = new Customers {
+                    IdCustomer = (databaseContext.Customers.Count() > 0) ? databaseContext.Customers.OrderBy(customer => customer.IdCustomer).Last().IdCustomer + 1 : 1,
+                    FkPerson = customerPerson.IdPerson,
                     FkCompany = null,
-                    FkUser = userId, // Referencing new customer account to this (newly created) user account
-                    Status = customerActive
-                });
+                    FkUser = customerUser.IdUser,
+                    Status = true
+                };
 
+                // Adding to database
+                databaseContext.Addresses.Add(customerAddress);
+                databaseContext.Persons.Add(customerPerson);
+                databaseContext.Users.Add(customerUser);
+                databaseContext.Customers.Add(customerObject);
                 databaseContext.SaveChanges();
-                Response.Cookies.Append("COOKIE_LOGGED_USERNAME", newUsername); // User registered properly, automatically logged in
 
+                Response.Cookies.Append("COOKIE_LOGGED_USERNAME", newUsername); // User registered properly, automatically logged in
                 return RedirectToAction("Index", "User");
             }
         }
@@ -266,7 +363,7 @@ namespace E_hurtownia.Controllers {
                 return RedirectToAction("Error", "User");
             }
 
-            Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();
+            Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single();
 
             if (currentUser.Password != oldPassword) {
                 TempData["CurrentPasswordIncorrect"] = true;
@@ -281,14 +378,98 @@ namespace E_hurtownia.Controllers {
 
                 return RedirectToAction("ChangePassword", "User");
             } else {
-                databaseContext.Users.Remove(currentUser);
-                databaseContext.SaveChanges();
-
                 currentUser.Password = newPassword;
-                databaseContext.Users.Add(currentUser);
+                databaseContext.Users.Update(currentUser);
                 databaseContext.SaveChanges();
 
                 TempData["PasswordChanged"] = true;
+                return RedirectToAction("Index", "User");
+            }
+        }
+
+        public IActionResult ChangeAddress() {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
+            if (databaseContext.Users.Count() > 0) {
+                Users meUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single();
+                Customers meCustomer = databaseContext.Customers.Where(customer => customer.FkUser == meUser.IdUser).Single();
+                Persons mePerson = databaseContext.Persons.Where(person => person.IdPerson == meCustomer.FkPerson).Single();
+                Addresses myAddress = databaseContext.Addresses.Where(address => address.IdAddress == mePerson.FkAddress).Single();
+
+                TempData["UpdatedAddressID"] = myAddress.IdAddress;
+                ViewBag.Address = myAddress;
+            }
+
+            if (TempData["AddressResult_InvalidStreet"] != null) ViewBag.AddressResult_InvalidStreet = true;
+            if (TempData["AddressResult_InvalidBuildingNum"] != null) ViewBag.AddressResult_InvalidBuildingNum = true;
+            if (TempData["AddressResult_InvalidCity"] != null) ViewBag.AddressResult_InvalidCity = true;
+            if (TempData["AddressResult_InvalidPostalCode"] != null) ViewBag.AddressResult_InvalidPostalCode = true;
+            if (TempData["AddressResult_InvalidCountry"] != null) ViewBag.AddressResult_InvalidCountry = true;
+
+            return View();
+        }
+
+        public IActionResult ChangeAddressCheck() {
+            string addressStreet = "";
+            int addressBuildingNum = -1;
+
+            #nullable enable
+            int? addressApartmentNum = null;
+            #nullable disable
+
+            string addressCity = "";
+            string addressPostalCode = "";
+            string addressCountry = "";
+
+            if (Request.HasFormContentType == true) {
+                addressStreet = Request.Form["address-street"];
+                addressCity = Request.Form["address-city"];
+                addressPostalCode = Request.Form["address-postal"];
+                addressCountry = Request.Form["address-country"];
+
+                if (Request.Form["address-bnum"].ToString() != String.Empty) {
+                    addressBuildingNum = Int32.Parse(Request.Form["address-bnum"]);
+                }
+
+                if (Request.Form["address-anum"].ToString() != String.Empty) {
+                    addressApartmentNum = Int32.Parse(Request.Form["address-anum"]);
+                }
+            } else {
+                TempData["ErrorHeader"] = "Data transfer error";
+                TempData["ErrorMessage"] = "Did not received any data, form is empty";
+
+                return RedirectToAction("Error", "User");
+            }
+
+            bool invalidStreet = (addressStreet.Length < 5 || addressStreet.Length > 60);
+            bool invalidBuildingNum = (addressBuildingNum < 0);
+            bool invalidCity = (addressCity.Length < 5 || addressCity.Length > 30);
+            bool invalidPostalCode = (addressPostalCode.Length < 5 || addressPostalCode.Length > 30);
+            bool invalidCountry = (addressCountry.Length < 3 || addressCountry.Length > 30);
+
+            if (invalidStreet == true || invalidBuildingNum == true || invalidCity == true || invalidPostalCode == true || invalidCountry == true) {
+                if (invalidStreet) TempData["AddressResult_InvalidStreet"] = true;
+                if (invalidBuildingNum) TempData["AddressResult_InvalidBuildingNum"] = true;
+                if (invalidCity) TempData["AddressResult_InvalidCity"] = true;
+                if (invalidPostalCode) TempData["AddressResult_InvalidPostalCode"] = true;
+                if (invalidCountry) TempData["AddressResult_InvalidCountry"] = true;
+
+                return RedirectToAction("ChangeAddress", "User");
+            } else {
+                int updatedAddressID = (int) TempData["UpdatedAddressID"];
+                Addresses updatedAddress = databaseContext.Addresses.Where(address => address.IdAddress == updatedAddressID).Single();
+
+                updatedAddress.Street = addressStreet;
+                updatedAddress.BuildingNum = addressBuildingNum;
+                updatedAddress.ApartmentNum = addressApartmentNum;
+                updatedAddress.City = addressCity;
+                updatedAddress.PostalCode = addressPostalCode;
+                updatedAddress.Country = addressCountry;
+
+                databaseContext.Addresses.Update(updatedAddress);
+                databaseContext.SaveChanges();
+
+                TempData["AddressChanged"] = true;
                 return RedirectToAction("Index", "User");
             }
         }

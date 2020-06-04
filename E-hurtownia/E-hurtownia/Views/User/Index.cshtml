@@ -17,6 +17,16 @@
                     </button>
                 </div>
             }
+
+            @if (ViewBag.AddressChanged != null) {
+                <div class="alert alert-success alert-dismissible fade show my-3" role="alert">
+                    Address updated successfully!
+
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
         </div>
 
         @if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
@@ -30,7 +40,7 @@
                         <form class="form-group">
                             <input type="submit" class="btn btn-block btn-dark" value="Change password" asp-controller="User" asp-action="ChangePassword" />
 
-                            @if (ViewBag.UserGroup == 1) {
+                            @if (ViewBag.UserGroup == 1) { // All users
                                 <input type="submit" class="btn btn-block btn-dark" value="Administrators cannot delete themselves" disabled="disabled" />
                             } else {
                                 <input type="submit" class="btn btn-block btn-dark" value="Delete account" asp-controller="User" asp-action="AccountDelete" />
@@ -42,13 +52,25 @@
                 @if (ViewBag.UserGroup == 1 || ViewBag.UserGroup == 2) { // Admin or Customer
                     <div class="row">
                         <div class="col bg-success mb-3">
-                            <div class="container text-center alert-success my-3">
+                            <div class="container text-center alert-success mt-3 mb-2">
                                 Customer dashboard
+
+                                @if (ViewBag.MeCustomer != null) {
+                                    <span>(CID @ViewBag.MeCustomer.IdCustomer)</span>
+                                } else {
+                                    <span><i>(null CID)</i></span>
+                                }
                             </div>
-                        
+
                             <form class="form-group">
-                                <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" />
-                                <input type="submit" class="btn btn-block btn-dark" value="Change address (WIP)" />
+
+                                @if (ViewBag.MeCustomer != null) {
+                                    <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" />
+                                    <input type="submit" class="btn btn-block btn-dark" value="Change address" asp-controller="User" asp-action="ChangeAddress" />
+                                } else {
+                                    <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" disabled="disabled" />
+                                    <input type="submit" class="btn btn-block btn-dark" value="Change address" disabled="disabled" />
+                                }
                             </form>
                         </div>
                     </div>
@@ -92,6 +114,7 @@
 
                             <form class="form-group">
                                 <input type="submit" class="btn btn-block btn-dark" value="Manage users & accounts" asp-controller="Admin" asp-action="UsersList" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage storehouses" asp-controller="Admin" asp-action="StorehousesList" />
                             </form>
                         </div>
                     </div>
@@ -102,14 +125,7 @@
 </div>
 
 @section CheckUserLogged {
-    @if (ViewBag.COOKIE_LOGGED_USERNAME == null) {
-        <form method="post" class="form-inline">
-            <input type="submit" class="btn btn-primary btn-outline-primary" value="Sign in / Sign up" asp-controller="User" asp-action="Login" />
-        </form>
-    } else {
-        <form method="post" class="form-inline">
-            <label class="text-light">Logged in as&nbsp;<label class="text-info border-right">@ViewBag.COOKIE_LOGGED_USERNAME&nbsp;</label></label>&nbsp;
-            <a class="text-danger" asp-controller="User" asp-action="Logout">Log out</a>
-        </form>
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
     }
 }

@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewData["Title"] = "ChangeAddress";
+}
+
+<h1>Change address</h1>
+<h4>Update your customer address by filling the form below and confirm changes</h4>
+
+<div class="container col-12 my-5">
+    <div class="row">
+        <div class="col-5">
+            <form method="post">
+                @{
+                    await Html.RenderPartialAsync("~/Views/PartialViews/FormAddress.cshtml");
+                }
+
+                <input class="btn btn-primary mr-3" type="submit" value="Update address" asp-controller="User" asp-action="ChangeAddressCheck" />
+                <input class="btn btn-secondary" type="submit" value="Cancel" asp-controller="User" asp-action="Index" />
+            </form>
+        </div>
+    </div>
+</div>
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}
