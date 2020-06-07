@@ -42,7 +42,7 @@ namespace E_hurtownia.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(ConfigUtils.GetDbConnectionString()).UseLoggerFactory(LoggerFactory);
+                optionsBuilder.UseSqlServer(ConfigUtil.GetDbConnectionString()).UseLoggerFactory(LoggerFactory);
             }
         }
 
