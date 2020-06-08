@@ -1,0 +1,60 @@
+﻿@model E_hurtownia.Models.Products
+
+@{
+    ViewData["Title"] = "Change pdf";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Change pdf</h1>
+
+<h4>Product Name: @Model.Name</h4>
+<hr />
+@if (ViewBag.FileEmptyError != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show my-3" role="alert">
+        File not chosen! Press cancel to leave page.
+
+        <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+<div class="row">
+    <object id="pdf" data="@Model.PdfFile" type="application/pdf" style="height:400px; width:100%;">
+        Example fallback content: This browser does not support PDFs. Please download the PDF to view it: Download PDF.
+    </object>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        @using (Html.BeginForm("UploadPdf",
+                     "Products",
+                     FormMethod.Post,
+                     new { enctype = "multipart/form-data" }))
+        {
+            <input name="idProduct" type="hidden" value="@Model.IdProduct" />
+            <input type="file" name="file" id="file" /><br><br>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Cancel" class="btn btn-primary" asp-action="Index" />
+            </div>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = (e) => {
+                $('#pdf').attr('data', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]); // convert to base64 string
+        }
+    }
+    console.log('loaded');
+    $('#file').change(function () {
+        readURL(this);
+    });
+</script>
+

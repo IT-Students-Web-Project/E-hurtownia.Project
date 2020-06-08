@@ -32,29 +32,32 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BasePricePerUnit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImgFile)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PdfFile)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FkUnitNavigation.IdUnit)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdProduct">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdProduct">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdProduct">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BasePricePerUnit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ImgFile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PdfFile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FkUnitNavigation.Name)
+                </td>
+                <td>
+                    <a asp-action="ChangeImage" asp-route-id="@item.IdProduct">Change image</a> |
+                    <a asp-action="ChangePdf" asp-route-id="@item.IdProduct">Change pdf</a> |
+                    <a asp-action="Edit" asp-route-id="@item.IdProduct">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdProduct">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdProduct">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

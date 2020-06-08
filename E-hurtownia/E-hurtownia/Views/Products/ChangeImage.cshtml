@@ -1,0 +1,59 @@
+﻿@model E_hurtownia.Models.Products
+
+@{
+    ViewData["Title"] = "Change image";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Change image</h1>
+
+<h4>Product Name: @Model.Name</h4>
+<hr />
+@if (ViewBag.FileEmptyError != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show my-3" role="alert">
+        File not chosen! Press cancel to leave page.
+
+        <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+<div class="row">
+    <img id="img" src="@Model.ImgFile" height="300" alt="Wybierz obraz produktu" />
+</div>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        @using (Html.BeginForm("UploadImage",
+                     "Products",
+                     FormMethod.Post,
+                     new { enctype = "multipart/form-data" }))
+        {
+            <input name="idProduct" type="hidden" value="@Model.IdProduct" />
+            <input type="file" name="file" id="file" /><br><br>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Cancel" class="btn btn-primary" asp-action="Index" />
+            </div>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = (e) => {
+                $('#img').attr('src', e.target.result);
+
+            }
+            reader.readAsDataURL(input.files[0]); // convert to base64 string
+        }
+    }
+    console.log('loaded');
+    $('#file').change(function () {
+        readURL(this);
+    });
+</script>
+

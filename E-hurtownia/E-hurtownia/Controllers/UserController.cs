@@ -6,7 +6,7 @@ using E_hurtownia.Models;
 
 namespace E_hurtownia.Controllers {
     public class UserController : Controller {
-        private EhurtowniaContext databaseContext = new EhurtowniaContext();
+        private readonly EhurtowniaContext databaseContext = new EhurtowniaContext();
 
         public IActionResult Index() { // ACTION - MAIN PAGE
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];

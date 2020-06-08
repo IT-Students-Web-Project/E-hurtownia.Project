@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using E_hurtownia.Models;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace E_hurtownia.Controllers
 {
@@ -47,8 +48,94 @@ namespace E_hurtownia.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "IdUnit");
+            ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "Name");
             return View();
+        }
+
+        public async Task<IActionResult> ChangeImage(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var products = await _context.Products.FindAsync(id);
+            if (products == null)
+            {
+                return NotFound();
+            }
+            ViewBag.FileEmptyError = TempData["FileEmptyError"];
+            return View(products);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadImage(IFormFile file, int idProduct)
+        {
+            if (file == null)
+            {
+                TempData["FileEmptyError"] = true;
+                return RedirectToAction("ChangeImage", new RouteValueDictionary(new { id = idProduct }));
+            }
+
+            var product = await _context.Products.FindAsync(idProduct);
+
+            if (product == null)
+                return NotFound();
+
+            product.DeleteImageFile();
+
+            product.ImgFile = Path.Combine(@"/images/products/", file.FileName);
+            await _context.SaveChangesAsync();
+
+            string serverPath = product.GetServerPath(product.ImgFile);
+
+            using (var stream = System.IO.File.Create(serverPath))
+                await file.CopyToAsync(stream);
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> ChangePdf(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var products = await _context.Products.FindAsync(id);
+            if (products == null)
+            {
+                return NotFound();
+            }
+            ViewBag.FileEmptyError = TempData["FileEmptyError"];
+            return View(products);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadPdf(IFormFile file, int idProduct)
+        {
+            if (file == null)
+            {
+                TempData["FileEmptyError"] = true;
+                return RedirectToAction("ChangePdf", new RouteValueDictionary(new { id = idProduct }));
+            }
+
+            var product = await _context.Products.FindAsync(idProduct);
+
+            if (product == null)
+                return NotFound();
+
+            product.DeletePdfFile();
+
+            product.PdfFile = Path.Combine(@"/pdf/products/", file.FileName);
+            await _context.SaveChangesAsync();
+
+            string serverPath = product.GetServerPath(product.PdfFile);
+
+            using (var stream = System.IO.File.Create(serverPath))
+                await file.CopyToAsync(stream);
+
+            return RedirectToAction("Index");
         }
 
         // POST: Products/Create
@@ -64,7 +151,7 @@ namespace E_hurtownia.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "IdUnit", products.FkUnit);
+            ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "Name", products.FkUnit);
             return View(products);
         }
 
@@ -81,7 +168,7 @@ namespace E_hurtownia.Controllers
             {
                 return NotFound();
             }
-            ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "IdUnit", products.FkUnit);
+            ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "Name", products.FkUnit);
             return View(products);
         }
 
@@ -117,7 +204,7 @@ namespace E_hurtownia.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "IdUnit", products.FkUnit);
+            ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "Name", products.FkUnit);
             return View(products);
         }
 

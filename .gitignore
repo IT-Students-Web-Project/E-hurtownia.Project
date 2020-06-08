@@ -1,4 +1,4 @@
 /E-hurtownia/.vs/*
 /E-hurtownia/E-hurtownia/bin/*
 /E-hurtownia/E-hurtownia/obj/*
-/E-hurtownia/E-hurtownia/config.ini
+/E-hurtownia/E-hurtownia/DbConnectionString.cs

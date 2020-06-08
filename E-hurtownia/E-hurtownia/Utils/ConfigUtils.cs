@@ -15,7 +15,7 @@ namespace E_hurtownia.Utils
 
         public static string GetDbConnectionString()
         {
-            return GetValueFromFile(ConfigParamKeys.CONNECTION_STRING, ConfigIniPath);
+            return DbConnectionString.VALUE;
         }
 
         internal static void SetConfigIniPath(string path)
