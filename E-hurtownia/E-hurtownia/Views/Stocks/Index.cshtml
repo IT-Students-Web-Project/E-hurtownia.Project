@@ -1,0 +1,71 @@
+﻿@model IEnumerable<E_hurtownia.Models.Stocks>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Stocks management</h1>
+<h5>Showing stocks for storehouses only where you are the Storekeeper</h5>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Stock ID
+            </th>
+            <th>
+                Product name
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                Storehouse ID
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+    List<Storekeepers> storekeeperList = (List<Storekeepers>) ViewBag.Storekeepers;
+
+    @if (storekeeperList.Where(storekeeper => storekeeper.FkStorehouse == item.FkStorehouseNavigation.IdStorehouse).Where(storekeeper => storekeeper.FkUser == ViewBag.CurrentUserID).Count() == 1) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdStock)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FkProductNavigation.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FkStorehouseNavigation.IdStorehouse)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdStock">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdStock">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdStock">Delete</a>
+            </td>
+        </tr>
+    }
+}
+    </tbody>
+</table>
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}

@@ -21,12 +21,15 @@ namespace E_hurtownia.Controllers
         // GET: Units
         public async Task<IActionResult> Index()
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             return View(await _context.Units.ToListAsync());
         }
 
         // GET: Units/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();
@@ -45,6 +48,7 @@ namespace E_hurtownia.Controllers
         // GET: Units/Create
         public IActionResult Create()
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             return View();
         }
 
@@ -55,6 +59,8 @@ namespace E_hurtownia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdUnit,Name,ShortName,Status")] Units units)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (ModelState.IsValid)
             {
                 _context.Add(units);
@@ -67,6 +73,8 @@ namespace E_hurtownia.Controllers
         // GET: Units/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();
@@ -87,6 +95,8 @@ namespace E_hurtownia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdUnit,Name,ShortName,Status")] Units units)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id != units.IdUnit)
             {
                 return NotFound();
@@ -118,6 +128,8 @@ namespace E_hurtownia.Controllers
         // GET: Units/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();
