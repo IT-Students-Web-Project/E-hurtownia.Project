@@ -20,7 +20,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="FkProduct" class="control-label"></label>
-                <select asp-for="FkProduct" class ="form-control" asp-items="ViewBag.FkProduct"></select>
+                <select asp-for="FkProduct" class="form-control" asp-items="ViewBag.FkProduct"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
@@ -29,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="FkStorehouse" class="control-label"></label>
-                <select asp-for="FkStorehouse" class ="form-control" asp-items="ViewBag.FkStorehouse"></select>
+                <select asp-for="FkStorehouse" class="form-control" asp-items="ViewBag.FkStorehouse"></select>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
@@ -49,4 +49,10 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
 }

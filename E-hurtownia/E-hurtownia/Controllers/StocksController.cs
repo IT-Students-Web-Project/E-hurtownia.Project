@@ -21,6 +21,9 @@ namespace E_hurtownia.Controllers
         // GET: Stocks
         public async Task<IActionResult> Index()
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+            ViewBag.CurrentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+            ViewBag.Storekeepers = _context.Storekeepers.ToList();
             var ehurtowniaContext = _context.Stocks.Include(s => s.FkProductNavigation).Include(s => s.FkStorehouseNavigation);
             return View(await ehurtowniaContext.ToListAsync());
         }
@@ -28,6 +31,8 @@ namespace E_hurtownia.Controllers
         // GET: Stocks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();
@@ -48,8 +53,20 @@ namespace E_hurtownia.Controllers
         // GET: Stocks/Create
         public IActionResult Create()
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+            int currentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+
+            List<Storehouses> availableStorehouses = new List<Storehouses>();
+            List<Storekeepers> availableStorekeepers = _context.Storekeepers.ToList();
+
+            foreach (Storekeepers storekeeper in availableStorekeepers) {
+                if (storekeeper.FkUser == currentUserID) {
+                    availableStorehouses.Add(_context.Storehouses.Where(storehouse => storehouse.IdStorehouse == storekeeper.FkStorehouse).Single());
+                }
+            }
+
             ViewData["FkProduct"] = new SelectList(_context.Products, "IdProduct", "Name");
-            ViewData["FkStorehouse"] = new SelectList(_context.Storehouses, "IdStorehouse", "IdStorehouse");
+            ViewData["FkStorehouse"] = new SelectList(availableStorehouses, "IdStorehouse", "IdStorehouse");
             return View();
         }
 
@@ -60,6 +77,8 @@ namespace E_hurtownia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdStock,FkProduct,Amount,FkStorehouse,Status")] Stocks stocks)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (ModelState.IsValid)
             {
                 _context.Add(stocks);
@@ -74,6 +93,18 @@ namespace E_hurtownia.Controllers
         // GET: Stocks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+            int currentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+
+            List<Storehouses> availableStorehouses = new List<Storehouses>();
+            List<Storekeepers> availableStorekeepers = _context.Storekeepers.ToList();
+
+            foreach (Storekeepers storekeeper in availableStorekeepers) {
+                if (storekeeper.FkUser == currentUserID) {
+                    availableStorehouses.Add(_context.Storehouses.Where(storehouse => storehouse.IdStorehouse == storekeeper.FkStorehouse).Single());
+                }
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -85,7 +116,7 @@ namespace E_hurtownia.Controllers
                 return NotFound();
             }
             ViewData["FkProduct"] = new SelectList(_context.Products, "IdProduct", "Name", stocks.FkProduct);
-            ViewData["FkStorehouse"] = new SelectList(_context.Storehouses, "IdStorehouse", "IdStorehouse", stocks.FkStorehouse);
+            ViewData["FkStorehouse"] = new SelectList(availableStorehouses, "IdStorehouse", "IdStorehouse", stocks.FkStorehouse);
             return View(stocks);
         }
 
@@ -96,6 +127,8 @@ namespace E_hurtownia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdStock,FkProduct,Amount,FkStorehouse,Status")] Stocks stocks)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id != stocks.IdStock)
             {
                 return NotFound();
@@ -129,6 +162,8 @@ namespace E_hurtownia.Controllers
         // GET: Stocks/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();

@@ -45,7 +45,7 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 
@@ -53,3 +53,8 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}

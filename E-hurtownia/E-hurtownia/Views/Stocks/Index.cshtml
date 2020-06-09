@@ -6,6 +6,7 @@
 }
 
 <h1>Stocks management</h1>
+<h5>Showing stocks for storehouses only where you are the Storekeeper</h5>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -33,6 +34,9 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
+    List<Storekeepers> storekeeperList = (List<Storekeepers>) ViewBag.Storekeepers;
+
+    @if (storekeeperList.Where(storekeeper => storekeeper.FkStorehouse == item.FkStorehouseNavigation.IdStorehouse).Where(storekeeper => storekeeper.FkUser == ViewBag.CurrentUserID).Count() == 1) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.IdStock)
@@ -55,6 +59,13 @@
                 <a asp-action="Delete" asp-route-id="@item.IdStock">Delete</a>
             </td>
         </tr>
+    }
 }
     </tbody>
 </table>
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}

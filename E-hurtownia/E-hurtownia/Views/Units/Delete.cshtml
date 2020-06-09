@@ -38,3 +38,9 @@
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}

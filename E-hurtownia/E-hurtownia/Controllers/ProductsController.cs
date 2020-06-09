@@ -22,6 +22,7 @@ namespace E_hurtownia.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             var ehurtowniaContext = _context.Products.Include(p => p.FkUnitNavigation);
             return View(await ehurtowniaContext.ToListAsync());
         }
@@ -29,6 +30,8 @@ namespace E_hurtownia.Controllers
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();
@@ -48,12 +51,15 @@ namespace E_hurtownia.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             ViewData["FkUnit"] = new SelectList(_context.Units, "IdUnit", "Name");
             return View();
         }
 
         public async Task<IActionResult> ChangeImage(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();
@@ -97,6 +103,8 @@ namespace E_hurtownia.Controllers
 
         public async Task<IActionResult> ChangePdf(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();
@@ -145,6 +153,8 @@ namespace E_hurtownia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdProduct,Name,BasePricePerUnit,ImgFile,PdfFile,FkUnit")] Products products)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (ModelState.IsValid)
             {
                 _context.Add(products);
@@ -158,6 +168,8 @@ namespace E_hurtownia.Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();
@@ -179,6 +191,8 @@ namespace E_hurtownia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdProduct,Name,BasePricePerUnit,ImgFile,PdfFile,FkUnit")] Products products)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id != products.IdProduct)
             {
                 return NotFound();
@@ -211,6 +225,8 @@ namespace E_hurtownia.Controllers
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+
             if (id == null)
             {
                 return NotFound();

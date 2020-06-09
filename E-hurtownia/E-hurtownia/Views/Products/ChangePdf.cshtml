@@ -9,8 +9,7 @@
 
 <h4>Product Name: @Model.Name</h4>
 <hr />
-@if (ViewBag.FileEmptyError != null)
-{
+@if (ViewBag.FileEmptyError != null) {
     <div class="alert alert-warning alert-dismissible fade show my-3" role="alert">
         File not chosen! Press cancel to leave page.
 
@@ -28,10 +27,9 @@
 <div class="row">
     <div class="col-md-4">
         @using (Html.BeginForm("UploadPdf",
-                     "Products",
-                     FormMethod.Post,
-                     new { enctype = "multipart/form-data" }))
-        {
+                    "Products",
+                    FormMethod.Post,
+                    new { enctype = "multipart/form-data" })) {
             <input name="idProduct" type="hidden" value="@Model.IdProduct" />
             <input type="file" name="file" id="file" /><br><br>
             <div class="form-group">
@@ -58,3 +56,8 @@
     });
 </script>
 
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}
