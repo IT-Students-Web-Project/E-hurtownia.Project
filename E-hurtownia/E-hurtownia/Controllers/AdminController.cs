@@ -6,7 +6,7 @@ using E_hurtownia.Models;
 
 namespace E_hurtownia.Controllers {
     public class AdminController : Controller {
-        private EhurtowniaContext databaseContext = new EhurtowniaContext();
+        private readonly EhurtowniaContext databaseContext = new EhurtowniaContext();
 
         private IActionResult CheckAdminRights(Func<IActionResult> actionIfAdmin) { // Generic function which checks whether the user has Administrator rights (is in Admins group)
             if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {

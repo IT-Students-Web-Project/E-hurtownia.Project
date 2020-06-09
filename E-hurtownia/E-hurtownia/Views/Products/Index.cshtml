@@ -1,0 +1,63 @@
+﻿@model IEnumerable<E_hurtownia.Models.Products>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BasePricePerUnit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImgFile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PdfFile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FkUnitNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BasePricePerUnit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ImgFile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PdfFile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FkUnitNavigation.Name)
+                </td>
+                <td>
+                    <a asp-action="ChangeImage" asp-route-id="@item.IdProduct">Change image</a> |
+                    <a asp-action="ChangePdf" asp-route-id="@item.IdProduct">Change pdf</a> |
+                    <a asp-action="Edit" asp-route-id="@item.IdProduct">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdProduct">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdProduct">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

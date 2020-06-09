@@ -84,7 +84,8 @@
                             </div>
 
                             <form class="form-group">
-                                <input type="submit" class="btn btn-block btn-dark" value="Manage products (WIP)" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage products" asp-controller="Products" asp-action="Index" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage units" asp-controller="Units" asp-action="Index" />
                             </form>
                         </div>
                     </div>
@@ -104,6 +105,7 @@
                         </div>
                     </div>
                 }
+
 
                 @if (ViewBag.UserGroup == 1) { // Admin
                     <div class="row">
