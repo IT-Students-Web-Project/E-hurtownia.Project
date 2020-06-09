@@ -77,6 +77,7 @@ namespace E_hurtownia.Controllers {
             if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
                 string usernameToDelete = Request.Cookies["COOKIE_LOGGED_USERNAME"];
                 Users deletedUser = databaseContext.Users.Where(user => user.Login == usernameToDelete).Single();
+                List<Storekeepers> deletedStorekeepers = databaseContext.Storekeepers.Where(storekeeper => storekeeper.FkUser == deletedUser.IdUser).ToList();
 
                 if (databaseContext.Customers.Where(customer => customer.FkUser == deletedUser.IdUser).Count() > 0) {
                     Customers deletedCustomer = databaseContext.Customers.Where(customer => customer.FkUser == deletedUser.IdUser).Single();
@@ -86,6 +87,10 @@ namespace E_hurtownia.Controllers {
                     databaseContext.Customers.Remove(deletedCustomer);
                     databaseContext.Persons.Remove(deletedPerson);
                     databaseContext.Addresses.Remove(deletedAddress);
+                }
+
+                if (deletedStorekeepers.Count() > 0) {
+                    databaseContext.Storekeepers.RemoveRange(deletedStorekeepers);
                 }
 
                 databaseContext.Users.Remove(deletedUser);
