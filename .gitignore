@@ -2,5 +2,5 @@
 /E-hurtownia/E-hurtownia/bin/*
 /E-hurtownia/E-hurtownia/obj/*
 /E-hurtownia/E-hurtownia/DbConnectionString.cs
-/E-hurtownia/E-hurtownia/images/*
-/E-hurtownia/E-hurtownia/pdf/*
+/E-hurtownia/E-hurtownia/wwwroot/images/*
+/E-hurtownia/E-hurtownia/wwwroot/pdf/*
