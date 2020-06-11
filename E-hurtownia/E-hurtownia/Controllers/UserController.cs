@@ -10,6 +10,9 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult Index() { // ACTION - MAIN PAGE
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+            ViewBag.Products = databaseContext.Products.ToList();
+            ViewBag.Stocks = databaseContext.Stocks.ToList();
+            ViewBag.Units = databaseContext.Units.ToList();
 
             if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
                 Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();

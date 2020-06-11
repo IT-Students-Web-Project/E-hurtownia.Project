@@ -1,0 +1,85 @@
+﻿<!--
+    PARTIAL VIEW - INDEX PRODUCT LIST
+
+    a) ViewBag.Products - required parameter (Product list from database - table PRODUCTS)
+    b) ViewBag.Units - required parameter (Units list from database - table UNITS)
+    c) ViewBag.Stocks - required parameter (Stocks list from database - table STOCKS)
+-->
+
+@if (ViewBag.Products is List<Products> && ViewBag.Units is List<Units> && ViewBag.Stocks is List<Stocks>) {
+    List<Products> productList = ViewBag.Products;
+    int listRows = productList.Count / 4;
+    int lastRowProducts = productList.Count % 4;
+    int productIndex = 0;
+
+    <div class="container col-12">
+        @for (int i = 0; i < listRows + 1; i++) { // Rows loop
+            <div class="row">
+                @for (int j = 0; j < 4; j++) {
+                    @if (productIndex < productList.Count) {
+                        <div class="col m-3 border-bottom border-top text-center">
+                            @{
+                                List<Stocks> stockList = ViewBag.Stocks;
+                                List<Units> unitList = ViewBag.Units;
+
+                                int totalProductAmount = stockList.Where(stock => stock.FkProduct == productList[productIndex].IdProduct).Sum(stock => stock.Amount);
+                                String productUnit = unitList.Where(unit => unit.IdUnit == productList[productIndex].FkUnit).Single().ShortName;
+                            }
+
+                            <div class="row"> <!-- SHOWING PRODUCT TITLE (NAME) WITH ID -->
+                                <div class="col-12">
+                                    <h5 class="mt-3">@productList[productIndex].Name <small>(ID @productList[productIndex].IdProduct)</small></h5>
+                                </div>
+                            </div>
+
+                            <div class="row"> <!-- SHOWING PRODUCT IMAGE -->
+                                <div class="col-12">
+                                    <img class="img-fluid" src="@productList[productIndex].ImgFile" />
+                                </div>
+                            </div>
+
+                            <div class="row"> <!-- SHOWING PRODUCT AMOUNT VALUE AND BUTTON -->
+                                <div class="col-12">
+                                    @if (totalProductAmount == 0) {
+                                        <i class="text-muted">out of stock</i>
+
+                                        <form class="mt-3" method="post">
+                                            <input class="btn btn-success btn-sm mb-3" type="submit" value="Add to cart" disabled="disabled" /> <!-- SHOWING 'ADD TO CART' BUTTON (DISABLED) -->
+                                        </form>
+                                    } else {
+                                        <span class="font-weight-bold">@totalProductAmount @productUnit available</span>
+
+                                        <form class="mt-3" method="post">
+                                            <input class="btn btn-success btn-sm mb-3" type="submit" value="Add to cart" /> <!-- SHOWING 'ADD TO CART' BUTTON -->
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+
+                            @{
+                                productIndex++;
+                            }
+                        </div>
+                    } else {
+                        <div class="col m-3"></div>
+                    }
+                }
+            </div>
+        }
+    </div>
+} else if (!(ViewBag.Products is List<Products>)) {
+    <div class="container py-3 col-12 bg-danger text-center font-weight-bold">
+        No products list available <br />
+        Pass it to this partial view via <code class="text-light">ViewBag.Products</code> (as List)
+    </div>
+} else if (!(ViewBag.Stocks is List<Stocks>)) {
+    <div class="container py-3 col-12 bg-danger text-center font-weight-bold">
+        No stocks list available <br />
+        Pass it to this partial view via <code class="text-light">ViewBag.Stocks</code> (as List)
+    </div>
+} else if (!(ViewBag.Units is List<Units>)) {
+    <div class="container py-3 col-12 bg-danger text-center font-weight-bold">
+        No units list available <br />
+        Pass it to this partial view via <code class="text-light">ViewBag.Units</code> (as List)
+    </div>
+}

@@ -17,5 +17,9 @@ namespace E_hurtownia.Controllers {
         public IActionResult NavBarUser() {
             return PartialView();
         }
+
+        public IActionResult ProductList() {
+            return PartialView();
+        }
     }
 }
