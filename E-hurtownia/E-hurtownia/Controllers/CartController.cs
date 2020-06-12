@@ -14,9 +14,13 @@ namespace E_hurtownia.Controllers {
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             ViewBag.Products = databaseContext.Products.ToList();
             ViewBag.Units = databaseContext.Units.ToList();
+
+            List<CartElement> cartList = new List<CartElement>();
             string cartJSON = Request.Cookies["COOKIE_CART_CONTENT"];
 
-            List<CartElement> cartList = JsonSerializer.Deserialize<List<CartElement>>(cartJSON);
+            if (cartJSON != "") {
+                cartList = JsonSerializer.Deserialize<List<CartElement>>(cartJSON);
+            }
 
             return View(cartList);
         }
