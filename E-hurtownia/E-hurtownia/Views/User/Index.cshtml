@@ -68,7 +68,7 @@
                             <form class="form-group">
 
                                 @if (ViewBag.MeCustomer != null) {
-                                    <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" />
+                                    <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" asp-controller="KONTROLER_KOSZYKA" asp-action="AKCJA_KOSZYKA" />
                                     <input type="submit" class="btn btn-block btn-dark" value="Change address" asp-controller="User" asp-action="ChangeAddress" />
                                 } else {
                                     <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" disabled="disabled" />

@@ -36,7 +36,7 @@
 @foreach (var item in Model) {
     List<Storekeepers> storekeeperList = (List<Storekeepers>) ViewBag.Storekeepers;
 
-    @if (storekeeperList.Where(storekeeper => storekeeper.FkStorehouse == item.FkStorehouseNavigation.IdStorehouse).Where(storekeeper => storekeeper.FkUser == ViewBag.CurrentUserID).Count() == 1) {
+    @if (storekeeperList.Where(storekeeper => storekeeper.FkStorehouse == item.FkStorehouseNavigation.IdStorehouse).Where(storekeeper => storekeeper.FkUser == ViewBag.CurrentUserID).Count() == 1 || ViewBag.IsAdmin == true) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.IdStock)
