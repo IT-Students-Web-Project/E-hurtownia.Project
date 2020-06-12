@@ -111,6 +111,7 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult Logout() { // ACTION - LOGOUT PROCEDURE
             Response.Cookies.Delete("COOKIE_LOGGED_USERNAME");
+            Response.Cookies.Delete("COOKIE_CART_CONTENT");
 
             return RedirectToAction("Index", "User");
         }
