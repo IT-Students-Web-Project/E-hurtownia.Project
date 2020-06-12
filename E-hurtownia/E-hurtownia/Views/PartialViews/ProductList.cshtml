@@ -50,7 +50,7 @@
                                         <span class="font-weight-bold">@totalProductAmount @productUnit available</span>
 
                                         <form class="mt-3" method="post">
-                                            <input class="btn btn-success btn-sm mb-3" type="submit" value="Add to cart" /> <!-- SHOWING 'ADD TO CART' BUTTON -->
+                                            <input class="btn btn-success btn-sm mb-3" type="submit" value="Add to cart" asp-controller="Customer" asp-action="Product" asp-route-id="@productList[productIndex].IdProduct" /> <!-- SHOWING 'ADD TO CART' BUTTON -->
                                         </form>
                                     }
                                 </div>

@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Product info";
+}
+
+@if (ViewBag.Product is Products && ViewBag.Stocks is List<Stocks> && ViewBag.Units is List<Units>) {
+    Products product = ViewBag.Product;
+    List<Stocks> stocks = ViewBag.Stocks;
+    List<Units> units = ViewBag.Units;
+    String shortUnitName = units.Where(unit => unit.IdUnit == product.FkUnit).Single().ShortName;
+    int totalUnitsAvailable = stocks.Where(stock => stock.FkProduct == product.IdProduct).Sum(stock => stock.Amount);
+
+    <div class="container col-10">
+        <div class="row">
+            <div class="col text-left">
+                <h1>Buy a product</h1>
+                <h3>@product.Name</h3>
+
+                <hr />
+                <h5>Product info</h5>
+
+                <ul>
+                    <li>Database ID - @product.IdProduct</li>
+                    <li>Base price per unit - @product.BasePricePerUnit.ToString("F2") €</li>
+                    <li>Product unit - @units.Where(unit => unit.IdUnit == product.FkUnit).Single().Name (UID @product.FkUnit)</li>
+
+                    @if (totalUnitsAvailable > 0) {
+                        <li>Total units available - @totalUnitsAvailable @shortUnitName
+
+                            <ul>
+                                @foreach (Stocks stock in stocks.Where(stock => stock.FkProduct == product.IdProduct)) {
+                                    <li>
+                                        @stock.Amount @shortUnitName available in storehouse with ID @stock.FkStorehouse
+                                    </li>
+                                }
+                            </ul>
+
+                            </li>
+                    } else {
+                        <li>Total units available - 0 @shortUnitName</li>
+                    }
+                </ul>
+            </div>
+            <div class="col-2 text-right">
+                <img class="img-fluid" src="@product.ImgFile" />
+            </div>
+        </div>
+    </div>
+} else if (!(ViewBag.Product is Products)) {
+    <div class="container py-3 col-12 bg-danger text-center font-weight-bold">
+        No product data available <br />
+        Pass it to this view via <code class="text-light">ViewBag.Product</code>
+    </div>
+} else if (!(ViewBag.Stocks is List<Stocks>)) {
+    <div class="container py-3 col-12 bg-danger text-center font-weight-bold">
+        No stocks list available <br />
+        Pass it to this view via <code class="text-light">ViewBag.Stocks</code> (as List)
+    </div>
+} else if (!(ViewBag.Units is List<Units>)) {
+    <div class="container py-3 col-12 bg-danger text-center font-weight-bold">
+        No units list available <br />
+        Pass it to this view via <code class="text-light">ViewBag.Units</code> (as List)
+    </div>
+}
+
+@section CheckUserLogged {
+    @{
+        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
+    }
+}
