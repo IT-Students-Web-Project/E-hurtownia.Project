@@ -155,6 +155,7 @@ namespace E_hurtownia.Controllers {
                 return RedirectToAction("Login", "User");
             } else {
                 Response.Cookies.Append("COOKIE_LOGGED_USERNAME", userName); // User logged in correctly, now its 'session' is enabled
+                Response.Cookies.Append("COOKIE_CART_CONTENT", "");
 
                 return RedirectToAction("Index", "User");
             }
