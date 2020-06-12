@@ -22,7 +22,7 @@
                                 List<Stocks> stockList = ViewBag.Stocks;
                                 List<Units> unitList = ViewBag.Units;
 
-                                int totalProductAmount = stockList.Where(stock => stock.FkProduct == productList[productIndex].IdProduct).Sum(stock => stock.Amount);
+                                int totalProductAmount = stockList.Where(stock => stock.FkProduct == productList[productIndex].IdProduct).Where(stock => stock.Status == true).Sum(stock => stock.Amount);
                                 String productUnit = unitList.Where(unit => unit.IdUnit == productList[productIndex].FkUnit).Single().ShortName;
                             }
 

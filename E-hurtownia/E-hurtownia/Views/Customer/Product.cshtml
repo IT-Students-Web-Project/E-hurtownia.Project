@@ -7,7 +7,7 @@
     List<Stocks> stocks = ViewBag.Stocks;
     List<Units> units = ViewBag.Units;
     String shortUnitName = units.Where(unit => unit.IdUnit == product.FkUnit).Single().ShortName;
-    int totalUnitsAvailable = stocks.Where(stock => stock.FkProduct == product.IdProduct).Sum(stock => stock.Amount);
+    int totalUnitsAvailable = stocks.Where(stock => stock.FkProduct == product.IdProduct).Where(stock => stock.Status == true).Sum(stock => stock.Amount);
 
     <div class="container col-10">
         <div class="row">
@@ -27,7 +27,7 @@
                         <li>Total units available - @totalUnitsAvailable @shortUnitName
 
                             <ul>
-                                @foreach (Stocks stock in stocks.Where(stock => stock.FkProduct == product.IdProduct)) {
+                                @foreach (Stocks stock in stocks.Where(stock => stock.FkProduct == product.IdProduct && stock.Status == true)) {
                                     <li>
                                         @stock.Amount @shortUnitName available in storehouse with ID @stock.FkStorehouse
                                     </li>
