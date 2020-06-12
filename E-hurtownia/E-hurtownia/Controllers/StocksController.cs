@@ -21,9 +21,13 @@ namespace E_hurtownia.Controllers
         // GET: Stocks
         public async Task<IActionResult> Index()
         {
+            int currentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-            ViewBag.CurrentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+            ViewBag.CurrentUserID = currentUserID;
             ViewBag.Storekeepers = _context.Storekeepers.ToList();
+            ViewBag.IsAdmin = _context.Users.Where(user => user.IdUser == currentUserID).Single().FkGroup == 1;
+
             var ehurtowniaContext = _context.Stocks.Include(s => s.FkProductNavigation).Include(s => s.FkStorehouseNavigation);
             return View(await ehurtowniaContext.ToListAsync());
         }
@@ -55,6 +59,7 @@ namespace E_hurtownia.Controllers
         {
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             int currentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+            int? currentUserGroup = _context.Users.Where(user => user.IdUser == currentUserID).Single().FkGroup;
 
             List<Storehouses> availableStorehouses = new List<Storehouses>();
             List<Storekeepers> availableStorekeepers = _context.Storekeepers.ToList();
@@ -66,7 +71,15 @@ namespace E_hurtownia.Controllers
             }
 
             ViewData["FkProduct"] = new SelectList(_context.Products, "IdProduct", "Name");
-            ViewData["FkStorehouse"] = new SelectList(availableStorehouses, "IdStorehouse", "IdStorehouse");
+
+            if (currentUserGroup == 1) {
+                ViewData["FkStorehouse"] = new SelectList(_context.Storehouses, "IdStorehouse", "IdStorehouse");
+            } else if (currentUserGroup == 3) {
+                ViewData["FkStorehouse"] = new SelectList(availableStorehouses, "IdStorehouse", "IdStorehouse");
+            } else {
+                ViewData["FkStorehouse"] = new SelectList(new List<Storehouses>(), "IdStorehouse", "IdStorehouse");
+            }
+
             return View();
         }
 
@@ -95,6 +108,7 @@ namespace E_hurtownia.Controllers
         {
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             int currentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+            int? currentUserGroup = _context.Users.Where(user => user.IdUser == currentUserID).Single().FkGroup;
 
             List<Storehouses> availableStorehouses = new List<Storehouses>();
             List<Storekeepers> availableStorekeepers = _context.Storekeepers.ToList();
@@ -116,7 +130,15 @@ namespace E_hurtownia.Controllers
                 return NotFound();
             }
             ViewData["FkProduct"] = new SelectList(_context.Products, "IdProduct", "Name", stocks.FkProduct);
-            ViewData["FkStorehouse"] = new SelectList(availableStorehouses, "IdStorehouse", "IdStorehouse", stocks.FkStorehouse);
+
+            if (currentUserGroup == 1) {
+                ViewData["FkStorehouse"] = new SelectList(_context.Storehouses, "IdStorehouse", "IdStorehouse");
+            } else if (currentUserGroup == 3) {
+                ViewData["FkStorehouse"] = new SelectList(availableStorehouses, "IdStorehouse", "IdStorehouse");
+            } else {
+                ViewData["FkStorehouse"] = new SelectList(new List<Storehouses>(), "IdStorehouse", "IdStorehouse");
+            }
+
             return View(stocks);
         }
 
