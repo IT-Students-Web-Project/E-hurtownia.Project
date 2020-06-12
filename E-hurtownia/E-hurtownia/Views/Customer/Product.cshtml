@@ -9,9 +9,9 @@
 <script type="text/javascript">
     $(function () {
         $(document).on("show.bs.modal", "#addToCartModal", function (event) {
-            var productQuantity = $("#addToCartQuantity").val();
-            var productID = $("#addToCartProductID").val();
-            var productMaxQTY = $("#addToCartProductMaxQTY").val();
+            var productQuantity = Number($("#addToCartQuantity").val());
+            var productID = Number($("#addToCartProductID").val());
+            var productMaxQTY = Number($("#addToCartProductMaxQTY").val());
 
             if (productQuantity < 1 || Number.isInteger(Number(productQuantity)) == false) {
                 $("#addToCartModalBody").text("Invalid amount of product, please select correct value, non-negative and integers only");
