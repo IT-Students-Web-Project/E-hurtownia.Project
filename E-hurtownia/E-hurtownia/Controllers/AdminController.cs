@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using E_hurtownia.Models;
-using System.Runtime.Loader;
-using System.Diagnostics.Eventing.Reader;
 
 namespace E_hurtownia.Controllers {
     public class AdminController : Controller {
-        private EhurtowniaContext databaseContext = new EhurtowniaContext();
+        private readonly EhurtowniaContext databaseContext = new EhurtowniaContext();
 
         private IActionResult CheckAdminRights(Func<IActionResult> actionIfAdmin) { // Generic function which checks whether the user has Administrator rights (is in Admins group)
             if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
@@ -130,6 +127,14 @@ namespace E_hurtownia.Controllers {
             }
         }
 
+        private void UpdateStorekeepers(Users deletedUser) {
+            List<Storekeepers> deletedStorekeepers = databaseContext.Storekeepers.Where(storekeeper => storekeeper.FkUser == deletedUser.IdUser).ToList();
+
+            if (deletedStorekeepers.Count() > 0) {
+                databaseContext.Storekeepers.RemoveRange(deletedStorekeepers);
+            }
+        }
+
         public IActionResult UsersList(int id) { // ACTION - SHOW USERS LIST
             return CheckAdminRights(() => {
                 ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
@@ -143,7 +148,6 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult UsersListAction_DELETE(int id) { // Deleting account (from admin users list level)
             Users deletedUser = databaseContext.Users.Where(user => user.IdUser == id).Single();
-            List<Storekeepers> deletedStorekeepers = databaseContext.Storekeepers.Where(storekeeper => storekeeper.FkUser == deletedUser.IdUser).ToList();
 
             if (databaseContext.Customers.Where(customer => customer.FkUser == id).Count() > 0) {
                 Customers deletedCustomer = databaseContext.Customers.Where(customer => customer.FkUser == id).Single();
@@ -155,9 +159,7 @@ namespace E_hurtownia.Controllers {
                 databaseContext.Addresses.Remove(deletedAddress);
             }
 
-            if (deletedStorekeepers.Count() > 0) {
-                databaseContext.Storekeepers.RemoveRange(deletedStorekeepers);
-            }
+            UpdateStorekeepers(deletedUser);
 
             databaseContext.Users.Remove(deletedUser);
             databaseContext.SaveChanges();
@@ -168,7 +170,9 @@ namespace E_hurtownia.Controllers {
         public IActionResult UsersListAction_MAKE_ADMIN(int id) { // Setting user group to ADMINS
             List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
             Users selectedAccount = usersToRegroup.First();
-            
+
+            UpdateStorekeepers(selectedAccount);
+
             selectedAccount.FkGroup = 1;
             databaseContext.Users.Update(selectedAccount);
             databaseContext.SaveChanges();
@@ -179,6 +183,8 @@ namespace E_hurtownia.Controllers {
         public IActionResult UsersListAction_MAKE_CUSTOMER(int id) { // Setting user group to CUSTOMERS
             List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
             Users selectedAccount = usersToRegroup.First();
+
+            UpdateStorekeepers(selectedAccount);
 
             selectedAccount.FkGroup = 2;
             databaseContext.Users.Update(selectedAccount);
@@ -201,6 +207,8 @@ namespace E_hurtownia.Controllers {
         public IActionResult UsersListAction_MAKE_OFFERENT(int id) { // Setting user group to OFFERENTS
             List<Users> usersToRegroup = databaseContext.Users.Where(user => user.IdUser == id).ToList();
             Users selectedAccount = usersToRegroup.First();
+
+            UpdateStorekeepers(selectedAccount);
 
             selectedAccount.FkGroup = 4;
             databaseContext.Users.Update(selectedAccount);

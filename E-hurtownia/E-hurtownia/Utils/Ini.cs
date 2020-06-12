@@ -6,7 +6,7 @@ namespace Utils
 {
     public class Ini
     {
-        private Dictionary<string, string> data;
+        private readonly Dictionary<string, string> data;
         public String Path
         {
             get;

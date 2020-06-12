@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using E_hurtownia.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 using Utils;
 
 namespace E_hurtownia.Models
@@ -35,13 +36,19 @@ namespace E_hurtownia.Models
         public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
+        public static readonly ILoggerFactory LoggerFactory =  Microsoft.Extensions.Logging.LoggerFactory.Create(builder => { builder.AddDebug(); });
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+/*<<<<<<< HEAD
 
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=E-hurtownia;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+
+=======*/
+                optionsBuilder.UseSqlServer(ConfigUtil.GetDbConnectionString()).UseLoggerFactory(LoggerFactory);
 
             }
         }

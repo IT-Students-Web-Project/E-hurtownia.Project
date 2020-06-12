@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using E_hurtownia.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Builder;
 
 namespace E_hurtownia.Controllers {
     public class UserController : Controller {
-        private EhurtowniaContext databaseContext = new EhurtowniaContext();
+        private readonly EhurtowniaContext databaseContext = new EhurtowniaContext();
 
         public IActionResult Index() { // ACTION - MAIN PAGE
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+            ViewBag.Products = databaseContext.Products.ToList();
+            ViewBag.Stocks = databaseContext.Stocks.ToList();
+            ViewBag.Units = databaseContext.Units.ToList();
 
             if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
                 Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();
@@ -80,6 +80,7 @@ namespace E_hurtownia.Controllers {
             if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
                 string usernameToDelete = Request.Cookies["COOKIE_LOGGED_USERNAME"];
                 Users deletedUser = databaseContext.Users.Where(user => user.Login == usernameToDelete).Single();
+                List<Storekeepers> deletedStorekeepers = databaseContext.Storekeepers.Where(storekeeper => storekeeper.FkUser == deletedUser.IdUser).ToList();
 
                 if (databaseContext.Customers.Where(customer => customer.FkUser == deletedUser.IdUser).Count() > 0) {
                     Customers deletedCustomer = databaseContext.Customers.Where(customer => customer.FkUser == deletedUser.IdUser).Single();
@@ -89,6 +90,10 @@ namespace E_hurtownia.Controllers {
                     databaseContext.Customers.Remove(deletedCustomer);
                     databaseContext.Persons.Remove(deletedPerson);
                     databaseContext.Addresses.Remove(deletedAddress);
+                }
+
+                if (deletedStorekeepers.Count() > 0) {
+                    databaseContext.Storekeepers.RemoveRange(deletedStorekeepers);
                 }
 
                 databaseContext.Users.Remove(deletedUser);

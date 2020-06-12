@@ -6,7 +6,6 @@
     <div class="row">
         <div class="col">
             <h1>E-Wholesale Project</h1>
-            <h4>Project description on main page, to be continued</h4>
 
             @if (ViewBag.PasswordChanged != null) {
                 <div class="alert alert-success alert-dismissible fade show my-3" role="alert">
@@ -26,6 +25,10 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+            }
+
+            @{
+                await Html.RenderPartialAsync("~/Views/PartialViews/ProductList.cshtml");
             }
         </div>
 
@@ -84,7 +87,8 @@
                             </div>
 
                             <form class="form-group">
-                                <input type="submit" class="btn btn-block btn-dark" value="Manage products (WIP)" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage products" asp-controller="Products" asp-action="Index" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage units" asp-controller="Units" asp-action="Index" />
                             </form>
                         </div>
                     </div>
@@ -98,12 +102,13 @@
                             </div>
 
                             <form class="form-group">
-                                <input type="submit" class="btn btn-block btn-dark" value="Manage stocks (WIP)" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage stocks" asp-controller="Stocks" asp-action="Index" />
                                 <input type="submit" class="btn btn-block btn-dark" value="Manage orders (WIP)" />
                             </form>
                         </div>
                     </div>
                 }
+
 
                 @if (ViewBag.UserGroup == 1) { // Admin
                     <div class="row">
