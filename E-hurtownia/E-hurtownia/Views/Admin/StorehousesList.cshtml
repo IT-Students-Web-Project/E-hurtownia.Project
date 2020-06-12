@@ -204,9 +204,3 @@
 <form method="post">
     <input class="btn btn-primary btn-block" type="submit" value="Add new storehouse" asp-controller="Admin" asp-action="StorehousesListAction_CREATE" />
 </form>
-
-@section CheckUserLogged {
-    @{
-        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
-    }
-}

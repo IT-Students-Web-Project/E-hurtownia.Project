@@ -30,8 +30,16 @@
                     </ul>
                 </div>
 
-                <!-- All views must check, whether the user is still logged in -->
-                @RenderSection("CheckUserLogged", required: false)
+                @if (Context.Request.Cookies["COOKIE_LOGGED_USERNAME"] == null) {
+                    <form method="post" class="form-inline">
+                        <input type="submit" class="btn btn-primary btn-outline-primary" value="Sign in / Sign up" asp-controller="User" asp-action="Login" />
+                    </form>
+                } else {
+                    <form method="post" class="form-inline">
+                        <label class="text-light">Logged in as&nbsp;<label class="text-info border-right">@Context.Request.Cookies["COOKIE_LOGGED_USERNAME"]&nbsp;</label></label>&nbsp;
+                        <a class="text-danger" asp-controller="User" asp-action="Logout">Log out</a>
+                    </form>
+                }
             </div>
         </nav>
     </header>

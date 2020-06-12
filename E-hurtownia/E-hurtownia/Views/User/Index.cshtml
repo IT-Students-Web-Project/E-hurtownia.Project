@@ -32,7 +32,7 @@
             }
         </div>
 
-        @if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
+        @if (Context.Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
             <div class="col-3 ml-3">
                 <div class="row">
                     <div class="col bg-secondary mb-3">
@@ -128,9 +128,3 @@
         }
     </div>
 </div>
-
-@section CheckUserLogged {
-    @{
-        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
-    }
-}

@@ -11,7 +11,6 @@ namespace E_hurtownia.Controllers {
         private EhurtowniaContext databaseContext = new EhurtowniaContext();
 
         public IActionResult Index() {
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             ViewBag.Products = databaseContext.Products.ToList();
             ViewBag.Units = databaseContext.Units.ToList();
 

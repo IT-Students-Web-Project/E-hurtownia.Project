@@ -9,12 +9,11 @@ namespace E_hurtownia.Controllers {
         private readonly EhurtowniaContext databaseContext = new EhurtowniaContext();
 
         public IActionResult Index() { // ACTION - MAIN PAGE
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             ViewBag.Products = databaseContext.Products.ToList();
             ViewBag.Stocks = databaseContext.Stocks.ToList();
             ViewBag.Units = databaseContext.Units.ToList();
 
-            if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
+            if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
                 Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();
                 ViewBag.UserGroup = currentUser.FkGroup;
                 
@@ -35,8 +34,6 @@ namespace E_hurtownia.Controllers {
         }
 
         public IActionResult Error() { // ACTION - GLOBAL ERROR PAGE
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-
             // Set all values below before running this action
             // TempData["ErrorHeader"] = "Error header";
             // TempData["ErrorMessage"] = "Error message";
@@ -344,8 +341,6 @@ namespace E_hurtownia.Controllers {
         }
 
         public IActionResult ChangePassword() { // ACTION - CHANGE PASSWORD
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-
             if (TempData["CurrentPasswordIncorrect"] != null) {
                 ViewBag.CurrentPasswordIncorrect = true;
             } else if (TempData["NewPasswordInvalid"] != null) {
@@ -398,8 +393,6 @@ namespace E_hurtownia.Controllers {
         }
 
         public IActionResult ChangeAddress() {
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-
             if (databaseContext.Users.Count() > 0) {
                 Users meUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single();
                 Customers meCustomer = databaseContext.Customers.Where(customer => customer.FkUser == meUser.IdUser).Single();
