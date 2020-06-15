@@ -92,15 +92,21 @@ namespace E_hurtownia.Controllers
         {
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
 
-            if (ModelState.IsValid)
+            bool alreadyExists = _context.Stocks.Where(s => s.FkProduct == stocks.FkProduct && s.FkStorehouse == stocks.FkStorehouse).Count() > 0;
+            if (alreadyExists)
+                ViewBag.Message = "Cannot create! Such stock already exists!";
+
+            if (!ModelState.IsValid || alreadyExists)
             {
-                _context.Add(stocks);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewData["FkProduct"] = new SelectList(_context.Products, "IdProduct", "Name", stocks.FkProduct);
+                ViewData["FkStorehouse"] = new SelectList(_context.Storehouses, "IdStorehouse", "IdStorehouse", stocks.FkStorehouse);
+                return View(stocks);
             }
-            ViewData["FkProduct"] = new SelectList(_context.Products, "IdProduct", "Name", stocks.FkProduct);
-            ViewData["FkStorehouse"] = new SelectList(_context.Storehouses, "IdStorehouse", "IdStorehouse", stocks.FkStorehouse);
-            return View(stocks);
+
+            stocks.IdStock = _context.Stocks.Max(s => s.IdStock) + 1;
+            _context.Add(stocks);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Stocks/Edit/5

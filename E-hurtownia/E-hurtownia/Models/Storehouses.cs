@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace E_hurtownia.Models
 {
@@ -13,6 +14,8 @@ namespace E_hurtownia.Models
 
         public int IdStorehouse { get; set; }
         public int? FkAddress { get; set; }
+
+        [DefaultValue(true)]
         public bool Status { get; set; }
 
         public virtual Addresses FkAddressNavigation { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace E_hurtownia.Models
 {
@@ -19,6 +20,8 @@ namespace E_hurtownia.Models
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Country { get; set; }
+
+        [DefaultValue(true)]
         public bool Status { get; set; }
 
         public virtual ICollection<Companies> Companies { get; set; }
