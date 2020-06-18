@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace E_hurtownia.Models
 {
@@ -15,6 +16,8 @@ namespace E_hurtownia.Models
         public int? FkGroup { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
+
+        [DefaultValue(true)]
         public bool Status { get; set; }
 
         public virtual Groups FkGroupNavigation { get; set; }

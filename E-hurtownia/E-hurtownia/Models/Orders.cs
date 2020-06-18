@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace E_hurtownia.Models
 {
@@ -13,6 +14,8 @@ namespace E_hurtownia.Models
         public DateTime? DateSent { get; set; }
         public DateTime? DatePaid { get; set; }
         public int FkOrderStatus { get; set; }
+
+        [DefaultValue(true)]
         public bool Status { get; set; }
 
         public virtual Customers FkCustomerNavigation { get; set; }

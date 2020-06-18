@@ -334,5 +334,41 @@ namespace E_hurtownia.Controllers {
 
             return RedirectToAction("StorehousesList", "Admin");
         }
+
+        public IActionResult RegisterUser()
+        {
+            TempData["isRegisteredByHimself"] = false;
+            ViewBag.Groups = databaseContext.Groups;
+
+
+            string lastLoginResult = (string)TempData["login-result"];
+            string lastRegisterResult = (string)TempData["register-result"];
+
+            if (lastLoginResult == "user-not-found")
+            {
+                ViewBag.UserNotFound = true;
+            }
+            else if (lastLoginResult == "password-incorrect")
+            {
+                ViewBag.PasswordIncorrect = true;
+                ViewBag.LastUserName = (string)TempData["login-name"];
+            }
+
+            if (lastRegisterResult == "invalid-username")
+            {
+                ViewBag.InvalidUsername = true;
+            }
+            else if (lastRegisterResult == "invalid-password")
+            {
+                ViewBag.InvalidPassword = true;
+                ViewBag.LastUserName = (string)TempData["register-name"];
+            }
+            else if (lastRegisterResult == "user-exists")
+            {
+                ViewBag.UserExists = true;
+            }
+
+            return View();
+        }
     }
 }
