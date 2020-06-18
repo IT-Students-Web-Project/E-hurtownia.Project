@@ -14,16 +14,16 @@
 
     <div class="container col-12">
         @for (int i = 0; i < listRows + 1; i++) { // Rows loop
-            <div class="row">
+            <div class="row"> <!-- Row 1/2 (product title, picture) -->
                 @for (int j = 0; j < 4; j++) {
                     @if (productIndex < productList.Count) {
-                        <div class="col m-3 border-bottom border-top text-center">
-                            @{
-                                List<Stocks> stockList = ViewBag.Stocks;
-                                List<Units> unitList = ViewBag.Units;
-
-                                int totalProductAmount = stockList.Where(stock => stock.FkProduct == productList[productIndex].IdProduct).Where(stock => stock.Status == true).Sum(stock => stock.Amount);
-                                String productUnit = unitList.Where(unit => unit.IdUnit == productList[productIndex].FkUnit).Single().ShortName;
+                        <div class="col mx-3 mt-3 border-top text-center">
+                            @{ 
+                                System.Diagnostics.Debug.WriteLine("[Row 1/2]");
+                                System.Diagnostics.Debug.WriteLine("  >> productList.Count = " + productList.Count);
+                                System.Diagnostics.Debug.WriteLine("  >> productIndex = " + productIndex);
+                                System.Diagnostics.Debug.WriteLine("  >> productList[productIndex].IdProduct = " + productList[productIndex].IdProduct);
+                                System.Diagnostics.Debug.WriteLine("  >> productList[productIndex].Name = " + productList[productIndex].Name);
                             }
 
                             <div class="row"> <!-- SHOWING PRODUCT TITLE (NAME) WITH ID -->
@@ -38,23 +38,57 @@
                                 </div>
                             </div>
 
-                            <div class="row"> <!-- SHOWING PRODUCT AMOUNT VALUE AND BUTTON -->
-                                <div class="col-12">
-                                    @if (totalProductAmount == 0) {
+                            @{
+                                productIndex++;
+                            }
+                        </div>
+                    } else {
+                        <div class="col m-3"></div>
+                    }
+                }
+
+                @{
+                    if (i == listRows) {
+                        productIndex -= lastRowProducts;
+                    } else {
+                        productIndex -= 4;
+                    }
+                }
+            </div>
+
+            <div class="row"> <!-- Row 2/2 (available stocks, button) -->
+                @for (int j = 0; j < 4; j++) {
+                    @if (productIndex < productList.Count) {
+                        <div class="col mx-3 mb-3 border-bottom text-center">
+                            @{ 
+                                System.Diagnostics.Debug.WriteLine("[Row 2/2]");
+                                System.Diagnostics.Debug.WriteLine("  >> productList.Count = " + productList.Count);
+                                System.Diagnostics.Debug.WriteLine("  >> productIndex = " + productIndex);
+                                System.Diagnostics.Debug.WriteLine("  >> productList[productIndex].IdProduct = " + productList[productIndex].IdProduct);
+                                System.Diagnostics.Debug.WriteLine("  >> productList[productIndex].Name = " + productList[productIndex].Name);
+                            }
+
+                            @{
+                                List<Stocks> stockList = ViewBag.Stocks;
+                                List<Units> unitList = ViewBag.Units;
+
+                                int totalProductAmount = stockList.Where(stock => stock.FkProduct == productList[productIndex].IdProduct).Where(stock => stock.Status == true).Sum(stock => stock.Amount);
+                                String productUnit = unitList.Where(unit => unit.IdUnit == productList[productIndex].FkUnit).Single().ShortName;
+                            }
+
+                            @if (totalProductAmount == 0) {
                                         <i class="text-muted">out of stock</i>
 
                                         <form class="mt-3" method="post">
                                             <input class="btn btn-success btn-sm mb-3" type="submit" value="Buy product" disabled="disabled" /> <!-- SHOWING 'ADD TO CART' BUTTON (DISABLED) -->
                                         </form>
-                                    } else {
-                                        <span class="font-weight-bold">@totalProductAmount @productUnit available</span>
+                            } else {
+                                <span class="font-weight-bold">@totalProductAmount @productUnit available</span>
 
-                                        <form class="mt-3" method="post">
-                                            <input class="btn btn-success btn-sm mb-3" type="submit" value="Buy product" asp-controller="Customer" asp-action="Product" asp-route-id="@productList[productIndex].IdProduct" /> <!-- SHOWING 'ADD TO CART' BUTTON -->
-                                        </form>
-                                    }
-                                </div>
-                            </div>
+                                <form class="mt-3" method="post">
+                                    <input class="btn btn-success btn-sm mb-3" type="submit" value="Buy product" asp-controller="Customer" asp-action="Product" asp-route-id="@productList[productIndex].IdProduct" /> <!-- SHOWING 'ADD TO CART' BUTTON -->
+                                </form>
+                            }
 
                             @{
                                 productIndex++;
