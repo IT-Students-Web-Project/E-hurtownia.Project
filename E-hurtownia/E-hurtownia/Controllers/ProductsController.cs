@@ -147,6 +147,7 @@ namespace E_hurtownia.Controllers
         {
             if (ModelState.IsValid)
             {
+                products.IdProduct = _context.Products.Max(product => product.IdProduct) + 1;
                 _context.Add(products);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
