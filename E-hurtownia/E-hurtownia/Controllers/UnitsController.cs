@@ -57,6 +57,7 @@ namespace E_hurtownia.Controllers
         {
             if (ModelState.IsValid)
             {
+                units.IdUnit = _context.Units.Max(unit => unit.IdUnit) + 1;
                 _context.Add(units);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
