@@ -15,6 +15,18 @@ namespace E_hurtownia.Controllers {
             ViewBag.Stocks = databaseContext.Stocks.ToList();
             ViewBag.Units = databaseContext.Units.ToList();
 
+            if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
+                string username = Request.Cookies["COOKIE_LOGGED_USERNAME"];
+                int userID = databaseContext.Users.Where(user => user.Login == username).Single().IdUser;
+                int? userGroup = databaseContext.Users.Where(user => user.IdUser == userID).Single().FkGroup;
+
+                Customers meCustomer = databaseContext.Customers.Where(customer => customer.FkUser == userID).SingleOrDefault();
+
+                if ((meCustomer != default(Customers)) && (userGroup == 2)) { // Current user is a Customer and is associated to Customers group
+                    ViewBag.IsCustomer = true;
+                }
+            }
+
             return View();
         }
 

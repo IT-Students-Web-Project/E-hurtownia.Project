@@ -118,11 +118,24 @@
                     <input type="hidden" id="addToCartProductID" value="@product.IdProduct" />
                     <input type="hidden" id="addToCartProductMaxQTY" value="@totalUnitsAvailable" />
 
-                    <input type="number" class="form-control mr-3" value="0" id="addToCartQuantity" />
-                    <input type="button" class="btn btn-primary" value="Add to cart" data-toggle="modal" data-target="#addToCartModal" />
+                    @if (ViewBag.IsCustomer == true) {
+                        <input type="number" class="form-control mr-3" value="0" id="addToCartQuantity" />
+                        <input type="button" class="btn btn-primary" value="Add to cart" data-toggle="modal" data-target="#addToCartModal" />
+                    } else {
+                        <input type="number" class="form-control mr-3" value="0" id="addToCartQuantity" disabled="disabled" />
+                        <input type="button" class="btn btn-primary" value="Add to cart" data-toggle="modal" data-target="#addToCartModal" disabled="disabled" /><br />
+                    }
                 </form>
             </div>
         </div>
+
+        @if (ViewBag.IsCustomer != true) {
+            <div class="row">
+                <div class="col-12 d-flex flex-row-reverse">
+                    <small>You are not a Customer, please sign in or sign up</small>
+                </div>
+            </div>
+        }
 
         @if (product.PdfFile != null) {
             <hr />
