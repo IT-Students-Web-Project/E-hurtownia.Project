@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using E_hurtownia.Models;
+using System.Text.Json;
 
 namespace E_hurtownia.Controllers
 {
@@ -14,6 +15,7 @@ namespace E_hurtownia.Controllers
             ViewBag.Products = databaseContext.Products.ToList();
             ViewBag.Stocks = databaseContext.Stocks.ToList();
             ViewBag.Units = databaseContext.Units.ToList();
+            ViewBag.Cart = new List<CartElement>();
 
             if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
                 Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();
@@ -33,6 +35,10 @@ namespace E_hurtownia.Controllers
             if (TempData["AddressChanged"] != null)
             {
                 ViewBag.AddressChanged = true;
+            }
+
+            if (Request.Cookies["COOKIE_CART_CONTENT"] != null && Request.Cookies["COOKIE_CART_CONTENT"] != "") {
+                ViewBag.Cart = JsonSerializer.Deserialize<List<CartElement>>(Request.Cookies["COOKIE_CART_CONTENT"]);
             }
 
             return View();

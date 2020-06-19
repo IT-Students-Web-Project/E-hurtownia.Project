@@ -68,7 +68,12 @@
                             <form class="form-group">
 
                                 @if (ViewBag.MeCustomer != null) {
-                                    <input type="submit" class="btn btn-block btn-dark" value="Shopping cart" asp-controller="Cart" asp-action="Index" />
+                                    @if (ViewBag.Cart.Count > 0) {
+                                        <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (@ViewBag.Cart.Count item/s)" asp-controller="Cart" asp-action="Index" />
+                                    } else {
+                                        <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (empty)" asp-controller="Cart" asp-action="Index" />
+                                    }
+
                                     <input type="submit" class="btn btn-block btn-dark" value="Change address" asp-controller="User" asp-action="ChangeAddress" />
                                 } else {
                                     <input type="submit" class="btn btn-block btn-dark" value="Shopping cart" disabled="disabled" />

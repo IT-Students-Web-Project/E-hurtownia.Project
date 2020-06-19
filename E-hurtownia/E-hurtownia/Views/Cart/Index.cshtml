@@ -10,36 +10,52 @@
 <h1>Shopping cart</h1>
 <h5>Currently, you have @Model.Count items in cart</h5>
 
-<table class="table table-hover table-dark mt-4">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Product ID</th>
-            <th>Product name</th>
-            <th>Quantity</th>
-            <th>Unit</th>
-            <th>Price per unit</th>
-            <th>Total price</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (CartElement element in @Model) {
-            Products currentProduct = productList.Where(product => product.IdProduct == element.ProductID).Single();
-            <tr>
-                <td>@(++cartIndex)</td>
-                <td>@element.ProductID</td>
-                <td>@currentProduct.Name</td>
-                <td>@element.ProductQuantity</td>
-                <td>@unitList.Where(unit => unit.IdUnit == currentProduct.FkUnit).Single().Name (@unitList.Where(unit => unit.IdUnit == currentProduct.FkUnit).Single().ShortName)</td>
-                <td>@currentProduct.BasePricePerUnit.ToString("F2") €</td>
-                <td>@((currentProduct.BasePricePerUnit * element.ProductQuantity).ToString("F2")) €</td>
-                <td>
-                    <form method="post">
-                        <input type="submit" class="btn btn-sm btn-danger" value="Delete item" />
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container col-12">
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-hover table-dark mt-4">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product ID</th>
+                        <th>Product name</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Price per unit</th>
+                        <th>Total price</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (CartElement element in @Model) {
+                        Products currentProduct = productList.Where(product => product.IdProduct == element.ProductID).Single();
+                        <tr>
+                            <td>@(++cartIndex)</td>
+                            <td>@element.ProductID</td>
+                            <td>@currentProduct.Name</td>
+                            <td>@element.ProductQuantity</td>
+                            <td>@unitList.Where(unit => unit.IdUnit == currentProduct.FkUnit).Single().Name (@unitList.Where(unit => unit.IdUnit == currentProduct.FkUnit).Single().ShortName)</td>
+                            <td>@currentProduct.BasePricePerUnit.ToString("F2") €</td>
+                            <td>@((currentProduct.BasePricePerUnit * element.ProductQuantity).ToString("F2")) €</td>
+                            <td>
+                                <form method="post">
+                                    <input type="submit" class="btn btn-sm btn-danger" value="Delete item" asp-controller="Cart" asp-action="DeleteItem" asp-route-id="@(cartIndex - 1)" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 d-flex flex-row-reverse">
+            @if (Model.Count > 0) {
+                <input type="submit" class="btn btn-success" value="Create an order" />
+            } else {
+                <input type="submit" class="btn btn-success" value="Create an order" disabled="disabled" />
+            }
+        </div>
+    </div>
+</div>
