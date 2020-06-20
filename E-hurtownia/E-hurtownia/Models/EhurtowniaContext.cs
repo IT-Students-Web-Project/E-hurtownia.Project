@@ -258,13 +258,9 @@ namespace E_hurtownia.Models
 
                 entity.HasIndex(e => e.FkOrderStatus);
 
-                entity.HasIndex(e => e.FkProduct);
-
                 entity.Property(e => e.IdOrder)
                     .HasColumnName("ID_ORDER")
                     .ValueGeneratedNever();
-
-                entity.Property(e => e.Amount).HasColumnName("AMOUNT");
 
                 entity.Property(e => e.DateOrdered)
                     .HasColumnName("DATE_ORDERED")
@@ -281,8 +277,6 @@ namespace E_hurtownia.Models
                 entity.Property(e => e.FkCustomer).HasColumnName("FK_CUSTOMER");
 
                 entity.Property(e => e.FkOrderStatus).HasColumnName("FK_ORDER_STATUS");
-
-                entity.Property(e => e.FkProduct).HasColumnName("FK_PRODUCT");
 
                 entity.Property(e => e.Status).HasColumnName("STATUS");
 

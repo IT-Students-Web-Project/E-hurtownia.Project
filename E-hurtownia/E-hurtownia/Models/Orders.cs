@@ -12,8 +12,6 @@ namespace E_hurtownia.Models
 
         public int IdOrder { get; set; }
         public int FkCustomer { get; set; }
-        public int FkProduct { get; set; }
-        public int Amount { get; set; }
         public DateTime? DateOrdered { get; set; }
         public DateTime? DateSent { get; set; }
         public DateTime? DatePaid { get; set; }
