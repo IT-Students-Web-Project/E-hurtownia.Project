@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace E_hurtownia.Models
 {
@@ -14,8 +13,6 @@ namespace E_hurtownia.Models
 
         public int IdGroup { get; set; }
         public string Name { get; set; }
-
-        [DefaultValue(true)]
         public bool Status { get; set; }
 
         public virtual ICollection<RightsAssignments> RightsAssignments { get; set; }

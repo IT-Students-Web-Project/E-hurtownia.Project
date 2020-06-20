@@ -7,6 +7,7 @@ using E_hurtownia.Models;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using System;
 
 namespace E_hurtownia.Controllers
 {
@@ -147,7 +148,14 @@ namespace E_hurtownia.Controllers
         {
             if (ModelState.IsValid)
             {
-                products.IdProduct = _context.Products.Max(product => product.IdProduct) + 1;
+                try
+                {
+                    products.IdProduct = _context.Products.Max(product => product.IdProduct) + 1;
+                }
+                catch(Exception e)
+                {
+                    products.IdProduct = 1;
+                }
                 _context.Add(products);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

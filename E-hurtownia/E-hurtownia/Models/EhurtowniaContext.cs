@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using E_hurtownia.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Logging;
-using Utils;
 
 namespace E_hurtownia.Models
 {
@@ -24,6 +20,7 @@ namespace E_hurtownia.Models
         public virtual DbSet<Customers> Customers { get; set; }
         public virtual DbSet<Groups> Groups { get; set; }
         public virtual DbSet<Objects> Objects { get; set; }
+        public virtual DbSet<OrderItems> OrderItems { get; set; }
         public virtual DbSet<OrderStatuses> OrderStatuses { get; set; }
         public virtual DbSet<Orders> Orders { get; set; }
         public virtual DbSet<Persons> Persons { get; set; }
@@ -36,13 +33,12 @@ namespace E_hurtownia.Models
         public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
-        public static readonly ILoggerFactory LoggerFactory =  Microsoft.Extensions.Logging.LoggerFactory.Create(builder => { builder.AddDebug(); });
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(ConfigUtil.GetDbConnectionString()).UseLoggerFactory(LoggerFactory);
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=E-hurtownia;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             }
         }
 
@@ -95,6 +91,8 @@ namespace E_hurtownia.Models
 
                 entity.ToTable("COMPANIES");
 
+                entity.HasIndex(e => e.FkAddress);
+
                 entity.Property(e => e.IdComapny)
                     .HasColumnName("ID_COMAPNY")
                     .ValueGeneratedNever();
@@ -130,6 +128,12 @@ namespace E_hurtownia.Models
                 entity.HasKey(e => e.IdCustomer);
 
                 entity.ToTable("CUSTOMERS");
+
+                entity.HasIndex(e => e.FkCompany);
+
+                entity.HasIndex(e => e.FkPerson);
+
+                entity.HasIndex(e => e.FkUser);
 
                 entity.Property(e => e.IdCustomer)
                     .HasColumnName("ID_CUSTOMER")
@@ -200,6 +204,33 @@ namespace E_hurtownia.Models
                     .IsFixedLength();
             });
 
+            modelBuilder.Entity<OrderItems>(entity =>
+            {
+                entity.HasKey(e => e.IdOrderItem);
+
+                entity.ToTable("ORDER_ITEMS");
+
+                entity.Property(e => e.IdOrderItem)
+                    .HasColumnName("ID_ORDER_ITEM")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.FkOrder).HasColumnName("FK_ORDER");
+
+                entity.Property(e => e.FkProduct).HasColumnName("FK_PRODUCT");
+
+                entity.HasOne(d => d.FkOrderNavigation)
+                    .WithMany(p => p.OrderItems)
+                    .HasForeignKey(d => d.FkOrder)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ORDER_ITEMS_ORDERS");
+
+                entity.HasOne(d => d.FkProductNavigation)
+                    .WithMany(p => p.OrderItems)
+                    .HasForeignKey(d => d.FkProduct)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ORDER_ITEMS_PRODUCTS");
+            });
+
             modelBuilder.Entity<OrderStatuses>(entity =>
             {
                 entity.HasKey(e => e.IdOrderStatus);
@@ -222,6 +253,12 @@ namespace E_hurtownia.Models
                 entity.HasKey(e => e.IdOrder);
 
                 entity.ToTable("ORDERS");
+
+                entity.HasIndex(e => e.FkCustomer);
+
+                entity.HasIndex(e => e.FkOrderStatus);
+
+                entity.HasIndex(e => e.FkProduct);
 
                 entity.Property(e => e.IdOrder)
                     .HasColumnName("ID_ORDER")
@@ -260,12 +297,6 @@ namespace E_hurtownia.Models
                     .HasForeignKey(d => d.FkOrderStatus)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ORDERS_ORDER_STATUSES");
-
-                entity.HasOne(d => d.FkProductNavigation)
-                    .WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.FkProduct)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ORDERS_PRODUCTS");
             });
 
             modelBuilder.Entity<Persons>(entity =>
@@ -273,6 +304,8 @@ namespace E_hurtownia.Models
                 entity.HasKey(e => e.IdPerson);
 
                 entity.ToTable("PERSONS");
+
+                entity.HasIndex(e => e.FkAddress);
 
                 entity.Property(e => e.IdPerson)
                     .HasColumnName("ID_PERSON")
@@ -311,6 +344,8 @@ namespace E_hurtownia.Models
 
                 entity.ToTable("PRODUCTS");
 
+                entity.HasIndex(e => e.FkUnit);
+
                 entity.Property(e => e.IdProduct)
                     .HasColumnName("ID_PRODUCT")
                     .ValueGeneratedNever();
@@ -348,6 +383,8 @@ namespace E_hurtownia.Models
 
                 entity.ToTable("RIGHTS");
 
+                entity.HasIndex(e => e.FkObject);
+
                 entity.Property(e => e.IdRight)
                     .HasColumnName("ID_RIGHT")
                     .ValueGeneratedNever();
@@ -373,6 +410,10 @@ namespace E_hurtownia.Models
                 entity.HasKey(e => e.IdRightAssignment);
 
                 entity.ToTable("RIGHTS_ASSIGNMENTS");
+
+                entity.HasIndex(e => e.FkGroup);
+
+                entity.HasIndex(e => e.FkRight);
 
                 entity.Property(e => e.IdRightAssignment)
                     .HasColumnName("ID_RIGHT_ASSIGNMENT")
@@ -400,6 +441,10 @@ namespace E_hurtownia.Models
                 entity.HasKey(e => e.IdStock);
 
                 entity.ToTable("STOCKS");
+
+                entity.HasIndex(e => e.FkProduct);
+
+                entity.HasIndex(e => e.FkStorehouse);
 
                 entity.Property(e => e.IdStock)
                     .HasColumnName("ID_STOCK")
@@ -432,6 +477,8 @@ namespace E_hurtownia.Models
 
                 entity.ToTable("STOREHOUSES");
 
+                entity.HasIndex(e => e.FkAddress);
+
                 entity.Property(e => e.IdStorehouse)
                     .HasColumnName("ID_STOREHOUSE")
                     .ValueGeneratedNever();
@@ -451,6 +498,10 @@ namespace E_hurtownia.Models
                 entity.HasKey(e => e.IdStorekeeper);
 
                 entity.ToTable("STOREKEEPERS");
+
+                entity.HasIndex(e => e.FkStorehouse);
+
+                entity.HasIndex(e => e.FkUser);
 
                 entity.Property(e => e.IdStorekeeper)
                     .HasColumnName("ID_STOREKEEPER")
@@ -502,6 +553,8 @@ namespace E_hurtownia.Models
 
                 entity.ToTable("USERS");
 
+                entity.HasIndex(e => e.FkGroup);
+
                 entity.Property(e => e.IdUser)
                     .HasColumnName("ID_USER")
                     .ValueGeneratedNever();
@@ -527,7 +580,6 @@ namespace E_hurtownia.Models
                     .HasForeignKey(d => d.FkGroup)
                     .HasConstraintName("FK_GROUP");
             });
-
             OnModelCreatingPartial(modelBuilder);
         }
 

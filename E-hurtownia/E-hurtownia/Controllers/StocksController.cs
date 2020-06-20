@@ -99,7 +99,14 @@ namespace E_hurtownia.Controllers
                 return View(stocks);
             }
 
-            stocks.IdStock = _context.Stocks.Max(s => s.IdStock) + 1;
+            try
+            {
+                stocks.IdStock = _context.Stocks.Max(s => s.IdStock) + 1;
+            }
+            catch(Exception e)
+            {
+                stocks.IdStock = 1;
+            }
             _context.Add(stocks);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
