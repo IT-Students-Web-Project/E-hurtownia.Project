@@ -1,7 +1,8 @@
 ﻿using System;
+using E_hurtownia.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Utils;
+using Microsoft.Extensions.Logging;
 
 namespace E_hurtownia.Models
 {
@@ -33,12 +34,13 @@ namespace E_hurtownia.Models
         public virtual DbSet<Storekeepers> Storekeepers { get; set; }
         public virtual DbSet<Units> Units { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public static readonly ILoggerFactory LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder => { builder.AddDebug(); });
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(Utils.ConfigUtil.GetDbConnectionString());
+                optionsBuilder.UseSqlServer(ConfigUtil.GetDbConnectionString()).UseLoggerFactory(LoggerFactory);
             }
         }
 
@@ -213,6 +215,11 @@ namespace E_hurtownia.Models
                 entity.Property(e => e.IdOrderItem)
                     .HasColumnName("ID_ORDER_ITEM")
                     .ValueGeneratedNever();
+
+                entity.Property(e => e.Amount)
+                    .HasColumnName("AMOUNT")
+                    .HasMaxLength(10)
+                    .IsFixedLength();
 
                 entity.Property(e => e.FkOrder).HasColumnName("FK_ORDER");
 
@@ -574,6 +581,7 @@ namespace E_hurtownia.Models
                     .HasForeignKey(d => d.FkGroup)
                     .HasConstraintName("FK_GROUP");
             });
+
             OnModelCreatingPartial(modelBuilder);
         }
 

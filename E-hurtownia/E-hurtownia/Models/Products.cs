@@ -15,9 +15,9 @@ namespace E_hurtownia.Models
         public int IdProduct { get; set; }
         public string Name { get; set; }
         public decimal BasePricePerUnit { get; set; }
+        public int FkUnit { get; set; }
         public string ImgFile { get; set; }
         public string PdfFile { get; set; }
-        public int FkUnit { get; set; }
 
         public virtual Units FkUnitNavigation { get; set; }
         public virtual ICollection<OrderItems> OrderItems { get; set; }
