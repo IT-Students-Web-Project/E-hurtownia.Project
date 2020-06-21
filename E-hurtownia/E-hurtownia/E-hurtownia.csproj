@@ -6,21 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\**" />
     <Compile Remove="wwwroot\NewFolder\**" />
+    <Content Remove="Migrations\**" />
     <Content Remove="wwwroot\NewFolder\**" />
+    <EmbeddedResource Remove="Migrations\**" />
     <EmbeddedResource Remove="wwwroot\NewFolder\**" />
+    <None Remove="Migrations\**" />
     <None Remove="wwwroot\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Migrations\20200620112922_first.cs" />
-    <Compile Remove="Migrations\20200620112922_first.Designer.cs" />
-    <Compile Remove="Migrations\20200620120346_First.cs" />
-    <Compile Remove="Migrations\20200620120346_First.Designer.cs" />
-    <Compile Remove="Migrations\20200620122830_OrderStatusesData.cs" />
-    <Compile Remove="Migrations\20200620122830_OrderStatusesData.Designer.cs" />
-    <Compile Remove="Migrations\20200620122941_OrderStatusesData.cs" />
-    <Compile Remove="Migrations\20200620122941_OrderStatusesData.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,7 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\products\" />
     <Folder Include="wwwroot\pdf\products\" />
   </ItemGroup>
