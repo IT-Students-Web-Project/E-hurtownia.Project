@@ -8,7 +8,7 @@ namespace E_hurtownia.Models
         public int IdOrderItem { get; set; }
         public int FkOrder { get; set; }
         public int FkProduct { get; set; }
-        public string Amount { get; set; }
+        public int Amount { get; set; }
 
         public virtual Orders FkOrderNavigation { get; set; }
         public virtual Products FkProductNavigation { get; set; }

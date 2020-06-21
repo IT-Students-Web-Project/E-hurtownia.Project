@@ -60,5 +60,40 @@ namespace E_hurtownia.Controllers {
                 return RedirectToAction("Error", "User");
             }
         }
+
+        public IActionResult CreateOrder() {
+            List<CartElement> orderCart = JsonSerializer.Deserialize<List<CartElement>>(Request.Cookies["COOKIE_CART_CONTENT"]);
+            int meUserID = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+            int meCustomerID = databaseContext.Customers.Where(customer => customer.FkUser == meUserID).Single().IdCustomer;
+            int orderItemIndex = (databaseContext.OrderItems.Count() > 0) ? databaseContext.OrderItems.Max(item => item.IdOrderItem) : 0;
+
+            Orders newOrder = new Orders {
+                IdOrder = (databaseContext.Orders.Count() > 0) ? databaseContext.Orders.Max(order => order.IdOrder) + 1 : 1,
+                FkCustomer = meCustomerID,
+                DateOrdered = DateTime.Now,
+                FkOrderStatus = 1,
+                Status = true
+            };
+
+            databaseContext.Orders.Add(newOrder);
+            databaseContext.SaveChanges();
+
+            foreach (CartElement cartElement in orderCart) {
+                OrderItems orderItem = new OrderItems {
+                    IdOrderItem = ++orderItemIndex,
+                    FkOrder = newOrder.IdOrder,
+                    FkProduct = cartElement.ProductID,
+                    Amount = cartElement.ProductQuantity
+                };
+
+                databaseContext.OrderItems.Add(orderItem);
+            }
+
+            databaseContext.SaveChanges();
+            Response.Cookies.Delete("COOKIE_CART_CONTENT");
+            Response.Cookies.Append("COOKIE_CART_CONTENT", "");
+
+            return RedirectToAction("Index", "User");
+        }
     }
 }

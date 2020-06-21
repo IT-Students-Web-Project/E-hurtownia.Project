@@ -103,7 +103,7 @@ namespace E_hurtownia.Controllers
             {
                 stocks.IdStock = _context.Stocks.Max(s => s.IdStock) + 1;
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 stocks.IdStock = 1;
             }

@@ -61,7 +61,7 @@ namespace E_hurtownia.Controllers
                 {
                     units.IdUnit = _context.Units.Max(unit => unit.IdUnit) + 1;
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                     units.IdUnit = 1;
                 }
