@@ -111,5 +111,14 @@ namespace E_hurtownia.Controllers {
 
             return View();
         }
+
+        public IActionResult Pay(int id) {
+            Orders paidOrder = databaseContext.Orders.Where(order => order.IdOrder == id).Single();
+            paidOrder.FkOrderStatus = 2;
+            paidOrder.DatePaid = DateTime.Now;
+
+            databaseContext.SaveChanges();
+            return RedirectToAction("MyOrders", "Customer");
+        }
     }
 }

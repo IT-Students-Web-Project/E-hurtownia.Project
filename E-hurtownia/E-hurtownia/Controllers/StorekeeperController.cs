@@ -23,5 +23,22 @@ namespace E_hurtownia.Controllers {
 
             return View();
         }
+
+        public IActionResult Send(int id) {
+            Orders sentOrder = databaseContext.Orders.Where(order => order.IdOrder == id).Single();
+            sentOrder.FkOrderStatus = 3;
+            sentOrder.DateSent = DateTime.Now;
+
+            databaseContext.SaveChanges();
+            return RedirectToAction("OrderList", "Storekeeper");
+        }
+
+        public IActionResult Deliver(int id) {
+            Orders deliveredOrder = databaseContext.Orders.Where(order => order.IdOrder == id).Single();
+            deliveredOrder.FkOrderStatus = 4;
+
+            databaseContext.SaveChanges();
+            return RedirectToAction("OrderList", "Storekeeper");
+        }
     }
 }

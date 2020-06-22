@@ -42,6 +42,7 @@
     <tbody>
         @foreach (Orders order in orderList.OrderBy(order => order.FkOrderStatus).ThenByDescending(order => order.DateOrdered)) {
             DateTime orderDateTime = (DateTime) order.DateOrdered;
+
             string orderStatus = orderStatuses.Where(status => status.IdOrderStatus == order.FkOrderStatus).Single().Name;
             decimal orderTotalValue = orderItems.Where(item => item.FkOrder == order.IdOrder).Sum(item => item.Amount * productList.Where(product => product.IdProduct == item.FkProduct).Single().BasePricePerUnit);
 
@@ -57,7 +58,14 @@
                 }
 
                 <td>@orderTotalValue.ToString("F2") €</td>
-                <td>@orderStatus</td>
+                <td>
+                    @orderStatus
+
+                    @if (order.FkOrderStatus == 4) {
+                        <br />
+                        <span class="badge badge-dark">Order completed</span>
+                    }
+                </td>
                 <td>
                     <form method="get">
                         <div class="form-group">
@@ -67,34 +75,59 @@
                         @if (meGroup == 2) { // Only Customers are able to pay
                             <div class="form-group">
                                 @if (order.FkOrderStatus == 1) {
-                                <input type="submit" class="btn btn-primary btn-sm" value="Pay @orderTotalValue.ToString("F2") €" asp-controller="Customer" asp-action="Pay" />
-                            } else {
-                                <input type="submit" class="btn btn-primary btn-sm" value="Already paid" disabled="disabled" />
-                            }
+                                    <input type="submit" class="btn btn-primary btn-sm" value="Pay @orderTotalValue.ToString("F2") €" asp-controller="Customer" asp-action="Pay" asp-route-id="@order.IdOrder" />
+                                } else {
+                                    <input type="submit" class="btn btn-primary btn-sm" value="Already paid" disabled="disabled" />
+                                }
+
+                                @if (order.DatePaid != null) {
+                                    DateTime paidDateTime = (DateTime) order.DatePaid;
+                                    <small>paid on @paidDateTime.ToString("dd.MM.yyyy, HH:mm")</small>
+                                }
                             </div>
                         }
 
                         @if (meGroup == 1 || meGroup == 3) { // Actions for Admins or Storekeepers
                             <div class="form-group">
                                 @if (order.FkOrderStatus == 2) {
-                                    <input type="submit" class="btn btn-primary btn-sm" value="Send" />
+                                    <input type="submit" class="btn btn-primary btn-sm" value="Send" asp-controller="Storekeeper" asp-action="Send" asp-route-id="@order.IdOrder" />
+
+                                    @if (order.DatePaid != null) {
+                                        DateTime paidDateTime = (DateTime) order.DatePaid;
+                                        <small>paid on @paidDateTime.ToString("dd.MM.yyyy, HH:mm")</small>
+                                    }
                                 } else {
                                     @if (order.DatePaid == null) {
                                         <input type="submit" class="btn btn-primary btn-sm" value="Waiting for pay" disabled="disabled" />
                                     } else {
                                         <input type="submit" class="btn btn-primary btn-sm" value="Already sent" disabled="disabled" />
+
+                                        @if (order.DatePaid != null) {
+                                            DateTime paidDateTime = (DateTime) order.DatePaid;
+                                            <small>paid on @paidDateTime.ToString("dd.MM.yyyy, HH:mm")</small>
+                                        }
                                     }
                                 }
                             </div>
 
                             <div class="form-group">
                                 @if (order.FkOrderStatus == 3) {
-                                    <input type="submit" class="btn btn-primary btn-sm" value="Deliver" />
+                                    <input type="submit" class="btn btn-danger btn-sm" value="Deliver" asp-controller="Storekeeper" asp-action="Deliver" asp-route-id="@order.IdOrder" />
+
+                                    @if (order.DatePaid != null) {
+                                        DateTime sentDateTime = (DateTime) order.DateSent;
+                                        <small>sent on @sentDateTime.ToString("dd.MM.yyyy, HH:mm")</small>
+                                    }
                                 } else {
                                     @if (order.DateSent == null) {
-                                        <input type="submit" class="btn btn-primary btn-sm" value="Waiting for sending" disabled="disabled" />
+                                        <input type="submit" class="btn btn-danger btn-sm" value="Waiting for sending" disabled="disabled" />
                                     } else {
-                                        <input type="submit" class="btn btn-primary btn-sm" value="Delivered" disabled="disabled" />
+                                        <input type="submit" class="btn btn-danger btn-sm" value="Delivered" disabled="disabled" />
+
+                                        @if (order.DatePaid != null) {
+                                            DateTime sentDateTime = (DateTime) order.DateSent;
+                                            <small>sent on @sentDateTime.ToString("dd.MM.yyyy, HH:mm")</small>
+                                        }
                                     }
                                 }
                             </div>
