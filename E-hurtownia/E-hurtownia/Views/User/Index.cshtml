@@ -75,9 +75,11 @@
                                     }
 
                                     <input type="submit" class="btn btn-block btn-dark" value="Change address" asp-controller="User" asp-action="ChangeAddress" />
+                                    <input type="submit" class="btn btn-block btn-dark" value="My orders" asp-controller="Customer" asp-action="MyOrders" />
                                 } else {
                                     <input type="submit" class="btn btn-block btn-dark" value="Shopping cart" disabled="disabled" />
                                     <input type="submit" class="btn btn-block btn-dark" value="Change address" disabled="disabled" />
+                                    <input type="submit" class="btn btn-block btn-dark" value="My orders" disabled="disabled" />
                                 }
                             </form>
                         </div>
@@ -108,7 +110,7 @@
 
                             <form class="form-group">
                                 <input type="submit" class="btn btn-block btn-dark" value="Manage stocks" asp-controller="Stocks" asp-action="Index" />
-                                <input type="submit" class="btn btn-block btn-dark" value="Manage orders (WIP)" />
+                                <input type="submit" class="btn btn-block btn-dark" value="Manage orders" asp-controller="Storekeeper" asp-action="OrderList" />
                             </form>
                         </div>
                     </div>

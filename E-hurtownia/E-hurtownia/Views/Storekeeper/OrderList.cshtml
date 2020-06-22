@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "OrderList";
+}
+
+<h1>Manage orders</h1>
+<h5>Storekeeper worklist - manage orders that have been already paid by Customer</h5>
+
+@{
+    await Html.RenderPartialAsync("~/Views/PartialViews/OrderList.cshtml");
+}

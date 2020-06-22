@@ -1,0 +1,84 @@
+﻿@{ 
+    List<Orders> orderList = ViewBag.Orders;
+    List<OrderItems> orderItems = ViewBag.OrderItems;
+    List<OrderStatuses> orderStatuses = ViewBag.OrderStatuses;
+    List<Products> productList = ViewBag.Products;
+
+    int meGroup = ViewBag.MeGroup;
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<script type="text/javascript">
+    function toggleOrderItems(targetID) {
+        document.getElementById(targetID).classList.toggle("d-none");
+    }
+</script>
+
+<table class="table table-striped mt-4">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Order date & time</th>
+            <th>Order total value</th>
+            <th>Order status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Orders order in orderList) {
+            DateTime orderDateTime = (DateTime) order.DateOrdered;
+            string orderStatus = orderStatuses.Where(status => status.IdOrderStatus == order.FkOrderStatus).Single().Name;
+            decimal orderTotalValue = orderItems.Where(item => item.FkOrder == order.IdOrder).Sum(item => item.Amount * productList.Where(product => product.IdProduct == item.FkProduct).Single().BasePricePerUnit);
+
+            <tr>
+                <td>@order.IdOrder</td>
+                <td>@orderDateTime.ToString("dddd, dd MMMM yyyy, HH:mm")</td>
+                <td>@orderTotalValue.ToString("F2") €</td>
+                <td>@orderStatus</td>
+                <td>
+                    <form class="form-inline" method="get">
+                        <input type="button" class="btn btn-success btn-sm" value="Order items" onclick="toggleOrderItems('OID_ROW_@order.IdOrder');" />
+
+                        @if (meGroup == 2) { // Only Customers are able to pay
+                            @if (order.FkOrderStatus == 1) {
+                                <input type="submit" class="btn btn-primary btn-sm ml-2" value="Pay @orderTotalValue.ToString("F2") €" />
+                            } else {
+                                <input type="submit" class="btn btn-primary btn-sm ml-2" value="Already paid" disabled="disabled" />
+                            }
+                        }
+                    </form>
+                </td>
+            </tr>
+
+            <tr class="d-none" id="OID_ROW_@order.IdOrder">
+                <td colspan="5">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item ID</th>
+                                <th>Product</th>
+                                <th>Amount</th>
+                                <th>Total value</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (OrderItems item in orderItems.Where(item => item.FkOrder == order.IdOrder)) {
+                                <tr>
+                                    <td>@item.IdOrderItem</td>
+                                    <td>@productList.Where(product => product.IdProduct == item.FkProduct).Single().Name</td>
+                                    <td>@item.Amount</td>
+                                    <td>@((item.Amount * productList.Where(product => product.IdProduct == item.FkProduct).Single().BasePricePerUnit).ToString("F2")) €</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

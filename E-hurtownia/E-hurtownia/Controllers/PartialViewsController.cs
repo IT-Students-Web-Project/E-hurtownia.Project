@@ -21,5 +21,9 @@ namespace E_hurtownia.Controllers {
         public IActionResult ProductList() {
             return PartialView();
         }
+
+        public IActionResult OrderList() {
+            return PartialView();
+        }
     }
 }

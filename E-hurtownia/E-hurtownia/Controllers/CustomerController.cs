@@ -95,5 +95,18 @@ namespace E_hurtownia.Controllers {
 
             return RedirectToAction("Index", "User");
         }
+
+        public IActionResult MyOrders() {
+            int meUserID = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+            int meCustomerID = databaseContext.Customers.Where(customer => customer.FkUser == meUserID).Single().IdCustomer;
+
+            ViewBag.MeGroup = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().FkGroup;
+            ViewBag.Orders = databaseContext.Orders.Where(order => order.FkCustomer == meCustomerID).ToList();
+            ViewBag.OrderItems = databaseContext.OrderItems.ToList();
+            ViewBag.OrderStatuses = databaseContext.OrderStatuses.ToList();
+            ViewBag.Products = databaseContext.Products.ToList();
+
+            return View();
+        }
     }
 }

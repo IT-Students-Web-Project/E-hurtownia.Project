@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "My orders";
+
+    List<Orders> orderList = ViewBag.Orders;
+}
+
+<h1>My Orders</h1>
+<h4>You have @orderList.Count orders in total</h4>
+
+@{ 
+    await Html.RenderPartialAsync("~/Views/PartialViews/OrderList.cshtml");
+}
