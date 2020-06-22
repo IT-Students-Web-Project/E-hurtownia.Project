@@ -1,10 +1,13 @@
 ﻿@{ 
+    List<Customers> customerList = ViewBag.Customers;
     List<Orders> orderList = ViewBag.Orders;
     List<OrderItems> orderItems = ViewBag.OrderItems;
     List<OrderStatuses> orderStatuses = ViewBag.OrderStatuses;
+    List<Persons> personList = ViewBag.Persons;
     List<Products> productList = ViewBag.Products;
 
-    int meGroup = ViewBag.MeGroup;
+    int? meGroup = ViewBag.MeGroup;
+    int tableColspan = 5; // 5 for Customers, 6 for Admins/Storekeepers
 }
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -14,6 +17,9 @@
 <script type="text/javascript">
     function toggleOrderItems(targetID) {
         document.getElementById(targetID).classList.toggle("d-none");
+
+        document.getElementById(targetID + '_BUTTON').classList.toggle("btn-danger");
+        document.getElementById(targetID + '_BUTTON').classList.toggle("btn-success");
     }
 </script>
 
@@ -22,40 +28,87 @@
         <tr>
             <th>Order ID</th>
             <th>Order date & time</th>
+
+            @if (meGroup == 1 || meGroup == 3) {
+                <th>Customer name</th>
+            }
+
             <th>Order total value</th>
             <th>Order status</th>
-            <th>Actions</th>
+            <th style="width: 20%">Actions</th>
         </tr>
     </thead>
 
     <tbody>
-        @foreach (Orders order in orderList) {
+        @foreach (Orders order in orderList.OrderBy(order => order.FkOrderStatus).ThenByDescending(order => order.DateOrdered)) {
             DateTime orderDateTime = (DateTime) order.DateOrdered;
             string orderStatus = orderStatuses.Where(status => status.IdOrderStatus == order.FkOrderStatus).Single().Name;
             decimal orderTotalValue = orderItems.Where(item => item.FkOrder == order.IdOrder).Sum(item => item.Amount * productList.Where(product => product.IdProduct == item.FkProduct).Single().BasePricePerUnit);
 
             <tr>
                 <td>@order.IdOrder</td>
-                <td>@orderDateTime.ToString("dddd, dd MMMM yyyy, HH:mm")</td>
+                <td>@orderDateTime.ToString("dd.MM.yyyy, HH:mm")</td>
+
+                @if (meGroup == 1 || meGroup == 3) {
+                    Customers ordererCustomer = customerList.Where(customer => customer.IdCustomer == order.FkCustomer).Single();
+                    Persons ordererPerson = personList.Where(person => person.IdPerson == ordererCustomer.FkPerson).Single();
+
+                    <td>@ordererPerson.Firstname @ordererPerson.Lastname</td>
+                }
+
                 <td>@orderTotalValue.ToString("F2") €</td>
                 <td>@orderStatus</td>
                 <td>
-                    <form class="form-inline" method="get">
-                        <input type="button" class="btn btn-success btn-sm" value="Order items" onclick="toggleOrderItems('OID_ROW_@order.IdOrder');" />
+                    <form method="get">
+                        <div class="form-group">
+                            <input id="OID_ROW_@(order.IdOrder)_BUTTON" type="button" class="btn btn-success btn-sm" value="Order items" onclick="toggleOrderItems('OID_ROW_@order.IdOrder');" />
+                        </div>
 
                         @if (meGroup == 2) { // Only Customers are able to pay
-                            @if (order.FkOrderStatus == 1) {
-                                <input type="submit" class="btn btn-primary btn-sm ml-2" value="Pay @orderTotalValue.ToString("F2") €" />
+                            <div class="form-group">
+                                @if (order.FkOrderStatus == 1) {
+                                <input type="submit" class="btn btn-primary btn-sm" value="Pay @orderTotalValue.ToString("F2") €" asp-controller="Customer" asp-action="Pay" />
                             } else {
-                                <input type="submit" class="btn btn-primary btn-sm ml-2" value="Already paid" disabled="disabled" />
+                                <input type="submit" class="btn btn-primary btn-sm" value="Already paid" disabled="disabled" />
                             }
+                            </div>
+                        }
+
+                        @if (meGroup == 1 || meGroup == 3) { // Actions for Admins or Storekeepers
+                            <div class="form-group">
+                                @if (order.FkOrderStatus == 2) {
+                                    <input type="submit" class="btn btn-primary btn-sm" value="Send" />
+                                } else {
+                                    @if (order.DatePaid == null) {
+                                        <input type="submit" class="btn btn-primary btn-sm" value="Waiting for pay" disabled="disabled" />
+                                    } else {
+                                        <input type="submit" class="btn btn-primary btn-sm" value="Already sent" disabled="disabled" />
+                                    }
+                                }
+                            </div>
+
+                            <div class="form-group">
+                                @if (order.FkOrderStatus == 3) {
+                                    <input type="submit" class="btn btn-primary btn-sm" value="Deliver" />
+                                } else {
+                                    @if (order.DateSent == null) {
+                                        <input type="submit" class="btn btn-primary btn-sm" value="Waiting for sending" disabled="disabled" />
+                                    } else {
+                                        <input type="submit" class="btn btn-primary btn-sm" value="Delivered" disabled="disabled" />
+                                    }
+                                }
+                            </div>
                         }
                     </form>
                 </td>
             </tr>
 
             <tr class="d-none" id="OID_ROW_@order.IdOrder">
-                <td colspan="5">
+                @if (meGroup == 1 || meGroup == 3) {
+                    tableColspan = 6;
+                }
+
+                <td colspan="@(tableColspan)">
                     <table class="table table-dark table-hover">
                         <thead>
                             <tr>

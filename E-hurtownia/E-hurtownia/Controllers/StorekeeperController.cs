@@ -10,10 +10,15 @@ namespace E_hurtownia.Controllers {
         private EhurtowniaContext databaseContext = new EhurtowniaContext();
 
         public IActionResult OrderList() {
-            ViewBag.MeGroup = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().FkGroup;
+            int meUserID = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
+            int? meGroup = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().FkGroup;
+
+            ViewBag.MeGroup = meGroup;
+            ViewBag.Customers = databaseContext.Customers.ToList();
             ViewBag.Orders = databaseContext.Orders.ToList();
             ViewBag.OrderItems = databaseContext.OrderItems.ToList();
             ViewBag.OrderStatuses = databaseContext.OrderStatuses.ToList();
+            ViewBag.Persons = databaseContext.Persons.ToList();
             ViewBag.Products = databaseContext.Products.ToList();
 
             return View();
