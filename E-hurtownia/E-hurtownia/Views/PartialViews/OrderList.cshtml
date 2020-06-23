@@ -40,7 +40,7 @@
     </thead>
 
     <tbody>
-        @foreach (Orders order in orderList.OrderBy(order => order.FkOrderStatus).ThenByDescending(order => order.DateOrdered)) {
+        @foreach (Orders order in orderList.OrderByDescending(order => order.DateOrdered)) {
             DateTime orderDateTime = (DateTime) order.DateOrdered;
 
             string orderStatus = orderStatuses.Where(status => status.IdOrderStatus == order.FkOrderStatus).Single().Name;
