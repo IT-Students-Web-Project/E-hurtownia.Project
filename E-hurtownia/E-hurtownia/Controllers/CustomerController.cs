@@ -10,6 +10,25 @@ namespace E_hurtownia.Controllers {
     public class CustomerController : Controller {
         private EhurtowniaContext databaseContext = new EhurtowniaContext();
 
+        private void updateStocks(int productID, int productAmount) { // Function that updates all stocks after creating an order
+            int amountLeft = productAmount;
+            List<Stocks> productStocks = databaseContext.Stocks.Where(stock => stock.FkProduct == productID).OrderBy(stock => stock.Amount).ToList();
+
+            foreach (Stocks productStock in productStocks) {
+                int stockAvailableAmount = productStock.Amount;
+
+                if (amountLeft > stockAvailableAmount) {
+                    amountLeft -= stockAvailableAmount;
+                    databaseContext.Stocks.Remove(productStock); // Remove unnecessary stock from database
+                } else {
+                    productStock.Amount -= amountLeft;
+                    databaseContext.Stocks.Update(productStock);
+
+                    return;
+                }
+            }
+        }
+
         public IActionResult Product(int id) {
             ViewBag.Product = databaseContext.Products.Where(product => product.IdProduct == id).Single();
             ViewBag.Stocks = databaseContext.Stocks.ToList();
@@ -111,6 +130,7 @@ namespace E_hurtownia.Controllers {
                         Amount = cartElement.ProductQuantity
                     };
 
+                    updateStocks(cartElement.ProductID, cartElement.ProductQuantity);
                     databaseContext.OrderItems.Add(orderItem);
                 }
 
