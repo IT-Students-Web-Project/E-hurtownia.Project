@@ -12,28 +12,54 @@ namespace E_hurtownia.Controllers
         private readonly EhurtowniaContext databaseContext = new EhurtowniaContext();
 
         public IActionResult Index() { // ACTION - MAIN PAGE
-            ViewBag.Products = databaseContext.Products.ToList();
+            ViewBag.ProductsAll = databaseContext.Products.ToList();
             ViewBag.Stocks = databaseContext.Stocks.ToList();
             ViewBag.Units = databaseContext.Units.ToList();
             ViewBag.Cart = new List<CartElement>();
 
             if (Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
-                Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).First();
+                Users currentUser = databaseContext.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single();
                 ViewBag.UserGroup = currentUser.FkGroup;
 
-                if (databaseContext.Customers.Where(customer => customer.FkUser == currentUser.IdUser).Count() > 0)
-                {
-                    ViewBag.MeCustomer = databaseContext.Customers.Where(customer => customer.FkUser == currentUser.IdUser).Single();
+                if (databaseContext.Customers.Where(customer => customer.FkUser == currentUser.IdUser).Count() > 0) {
+                    Customers meCustomer = databaseContext.Customers.Where(customer => customer.FkUser == currentUser.IdUser).Single();
+                    List<Orders> myOrders = databaseContext.Orders.Where(order => order.FkCustomer == meCustomer.IdCustomer).OrderByDescending(order => order.DateOrdered).ToList();
+
+                    ViewBag.MeCustomer = meCustomer;
+
+                    if (myOrders.Count() > 0) {
+                        List<Products> myOrderedProducts = new List<Products>();
+
+                        foreach (Orders order in myOrders) {
+                            List<OrderItems> orderItems = databaseContext.OrderItems.Where(item => item.FkOrder == order.IdOrder).ToList();
+
+                            foreach (OrderItems item in orderItems) {
+                                Products itemProduct = databaseContext.Products.Where(product => product.IdProduct == item.FkProduct).Single();
+
+                                if (myOrderedProducts.Contains(itemProduct) == false) { // Select distinct product items
+                                    myOrderedProducts.Add(itemProduct);
+                                }
+
+                                if (myOrderedProducts.Count >= 4) {
+                                    break;
+                                }
+                            }
+
+                            if (myOrderedProducts.Count >= 4) {
+                                break;
+                            }
+                        }
+
+                        ViewBag.ProductsLatest = myOrderedProducts;
+                    }
                 }
             }
 
-            if (TempData["PasswordChanged"] != null)
-            {
+            if (TempData["PasswordChanged"] != null) {
                 ViewBag.PasswordChanged = true;
             }
 
-            if (TempData["AddressChanged"] != null)
-            {
+            if (TempData["AddressChanged"] != null) {
                 ViewBag.AddressChanged = true;
             }
 

@@ -28,6 +28,17 @@
             }
 
             @{
+                if (ViewBag.ProductsLatest != null) {
+                    <h4>Latest bought products</h4>
+
+                    ViewBag.Products = ViewBag.ProductsLatest;
+                    await Html.RenderPartialAsync("~/Views/PartialViews/ProductList.cshtml");
+
+                    <br />
+                    <h4>All products</h4>
+                }
+
+                ViewBag.Products = ViewBag.ProductsAll;
                 await Html.RenderPartialAsync("~/Views/PartialViews/ProductList.cshtml");
             }
         </div>
