@@ -67,33 +67,59 @@ namespace E_hurtownia.Controllers {
             int meCustomerID = databaseContext.Customers.Where(customer => customer.FkUser == meUserID).Single().IdCustomer;
             int orderItemIndex = (databaseContext.OrderItems.Count() > 0) ? databaseContext.OrderItems.Max(item => item.IdOrderItem) : 0;
 
-            Orders newOrder = new Orders {
-                IdOrder = (databaseContext.Orders.Count() > 0) ? databaseContext.Orders.Max(order => order.IdOrder) + 1 : 1,
-                FkCustomer = meCustomerID,
-                DateOrdered = DateTime.Now,
-                FkOrderStatus = 1,
-                Status = true
-            };
+            bool isEverythingAvailable = true;
+            int unavailableProductID = 0;
+            int unavailableProductOrdered = 0;
 
-            databaseContext.Orders.Add(newOrder);
-            databaseContext.SaveChanges();
+            foreach (CartElement orderedElement in orderCart) {
+                int orderedProductID = orderedElement.ProductID;
+                int orderedAmount = orderedElement.ProductQuantity;
+                int availableProductAmount = databaseContext.Stocks.Where(stock => stock.FkProduct == orderedProductID).Sum(stock => stock.Amount);
 
-            foreach (CartElement cartElement in orderCart) {
-                OrderItems orderItem = new OrderItems {
-                    IdOrderItem = ++orderItemIndex,
-                    FkOrder = newOrder.IdOrder,
-                    FkProduct = cartElement.ProductID,
-                    Amount = cartElement.ProductQuantity
-                };
+                if (orderedAmount > availableProductAmount) {
+                    isEverythingAvailable = false;
+                    unavailableProductID = orderedProductID;
+                    unavailableProductOrdered = orderedAmount;
 
-                databaseContext.OrderItems.Add(orderItem);
+                    break;
+                }
             }
 
-            databaseContext.SaveChanges();
-            Response.Cookies.Delete("COOKIE_CART_CONTENT");
-            Response.Cookies.Append("COOKIE_CART_CONTENT", "");
+            if (isEverythingAvailable == false) {
+                TempData["IsEverythingAvailable"] = isEverythingAvailable;
+                TempData["UnavailableProductID"] = unavailableProductID;
+                TempData["UnavailableProductOrdered"] = unavailableProductOrdered;
 
-            return RedirectToAction("Index", "User");
+                return RedirectToAction("Index", "Cart");
+            } else {
+                Orders newOrder = new Orders {
+                    IdOrder = (databaseContext.Orders.Count() > 0) ? databaseContext.Orders.Max(order => order.IdOrder) + 1 : 1,
+                    FkCustomer = meCustomerID,
+                    DateOrdered = DateTime.Now,
+                    FkOrderStatus = 1,
+                    Status = true
+                };
+
+                databaseContext.Orders.Add(newOrder);
+                databaseContext.SaveChanges();
+
+                foreach (CartElement cartElement in orderCart) {
+                    OrderItems orderItem = new OrderItems {
+                        IdOrderItem = ++orderItemIndex,
+                        FkOrder = newOrder.IdOrder,
+                        FkProduct = cartElement.ProductID,
+                        Amount = cartElement.ProductQuantity
+                    };
+
+                    databaseContext.OrderItems.Add(orderItem);
+                }
+
+                databaseContext.SaveChanges();
+                Response.Cookies.Delete("COOKIE_CART_CONTENT");
+                Response.Cookies.Append("COOKIE_CART_CONTENT", "");
+
+                return RedirectToAction("Index", "User");
+            }
         }
 
         public IActionResult MyOrders() {

@@ -21,6 +21,15 @@ namespace E_hurtownia.Controllers {
                 cartList = JsonSerializer.Deserialize<List<CartElement>>(cartJSON);
             }
 
+            if (TempData["IsEverythingAvailable"] != null) ViewBag.IsEverythingAvailable = (bool) TempData["IsEverythingAvailable"];
+            if (TempData["UnavailableProductID"] != null) ViewBag.UnavailableProductID = (int) TempData["UnavailableProductID"];
+            if (TempData["UnavailableProductOrdered"] != null) ViewBag.UnavailableProductOrdered = (int) TempData["UnavailableProductOrdered"];
+
+            if (ViewBag.UnavailableProductID != null) {
+                ViewBag.UnavailableProductName = databaseContext.Products.Where(product => product.IdProduct == (int) TempData["UnavailableProductID"]).Single().Name;
+                ViewBag.UnavailableProductAmount = databaseContext.Stocks.Where(stock => stock.FkProduct == (int) TempData["UnavailableProductID"]).Sum(stock => stock.Amount);
+            }
+
             return View(cartList);
         }
 
