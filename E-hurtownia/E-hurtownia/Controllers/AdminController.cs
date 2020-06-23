@@ -340,7 +340,6 @@ namespace E_hurtownia.Controllers {
             TempData["isRegisteredByHimself"] = false;
             ViewBag.Groups = databaseContext.Groups;
 
-
             string lastLoginResult = (string)TempData["login-result"];
             string lastRegisterResult = (string)TempData["register-result"];
 

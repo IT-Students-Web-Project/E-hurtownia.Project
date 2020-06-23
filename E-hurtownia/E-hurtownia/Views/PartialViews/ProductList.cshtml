@@ -11,9 +11,10 @@
     int listRows = productList.Count / 4;
     int lastRowProducts = productList.Count % 4;
     int productIndex = 0;
+    int additionalRows = (lastRowProducts > 0) ? 1 : 0;
 
     <div class="container col-12">
-        @for (int i = 0; i < listRows + 1; i++) { // Rows loop
+        @for (int i = 0; i < listRows + additionalRows; i++) { // Rows loop
             <div class="row"> <!-- Row 1/2 (product title, picture) -->
                 @for (int j = 0; j < 4; j++) {
                     @if (productIndex < productList.Count) {
