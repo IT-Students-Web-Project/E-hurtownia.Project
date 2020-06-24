@@ -6,7 +6,7 @@ namespace E_hurtownia
     {
         public static void Init()
         {
-            ConfigUtil.SetVersion("0.002");
+            ConfigUtil.SetVersion("0.003");
             ConfigUtil.SetConfigIniPath("config.ini");
         }
     }
