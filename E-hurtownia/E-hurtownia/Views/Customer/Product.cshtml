@@ -129,13 +129,21 @@
             </div>
         </div>
 
-        @if (ViewBag.IsCustomer != true) {
-            <div class="row">
-                <div class="col-12 d-flex flex-row-reverse">
+        <div class="row">
+            <div class="col-12 text-right">
+                @if (ViewBag.IsCustomer != true) {
                     <small>You are not a Customer, please sign in or sign up</small>
-                </div>
+                } else {
+                    <small>
+                        Special discounts on buying larger amounts<br />
+
+                        <div class="badge badge-dark">5 %</div> when buying more than <strong>100</strong> units<br />
+                        <div class="badge badge-dark">10 %</div> when buying more than <strong>1000</strong> units<br />
+                        <div class="badge badge-dark">20 %</div> when buying more than <strong>5000</strong> units
+                    </small>
+                }
             </div>
-        }
+        </div>
 
         @if (product.PdfFile != null) {
             <hr />

@@ -42,9 +42,15 @@
     <tbody>
         @foreach (Orders order in orderList.OrderByDescending(order => order.DateOrdered)) {
             DateTime orderDateTime = (DateTime) order.DateOrdered;
+            List<OrderItems> thisOrder = orderItems.Where(item => item.FkOrder == order.IdOrder).ToList();
 
             string orderStatus = orderStatuses.Where(status => status.IdOrderStatus == order.FkOrderStatus).Single().Name;
-            decimal orderTotalValue = orderItems.Where(item => item.FkOrder == order.IdOrder).Sum(item => item.Amount * productList.Where(product => product.IdProduct == item.FkProduct).Single().BasePricePerUnit);
+            decimal orderTotalValue = 0M;
+
+            foreach (OrderItems singleItem in thisOrder) {
+                PriceCalculatorReturn calculatedItem = PriceCalculator.CalculatePrice(singleItem.FkProduct, singleItem.Amount);
+                orderTotalValue += calculatedItem.NewBasePrice * singleItem.Amount;
+            }
 
             <tr>
                 <td>@order.IdOrder</td>
@@ -69,7 +75,7 @@
                 <td>
                     <form method="get">
                         <div class="form-group">
-                            <input id="OID_ROW_@(order.IdOrder)_BUTTON" type="button" class="btn btn-success btn-sm" value="Order items" onclick="toggleOrderItems('OID_ROW_@order.IdOrder');" />
+                            <input id="OID_ROW_@(order.IdOrder)_BUTTON" type="button" class="btn btn-success btn-sm" value="Order items list" onclick="toggleOrderItems('OID_ROW_@order.IdOrder');" />
                         </div>
 
                         @if (meGroup == 2) { // Only Customers are able to pay
@@ -158,7 +164,19 @@
                                     <td>@item.IdOrderItem</td>
                                     <td>@productList.Where(product => product.IdProduct == item.FkProduct).Single().Name</td>
                                     <td>@item.Amount</td>
-                                    <td>@((item.Amount * productList.Where(product => product.IdProduct == item.FkProduct).Single().BasePricePerUnit).ToString("F2")) €</td>
+                                    <td>
+                                        @{
+                                            PriceCalculatorReturn calculatedItem = PriceCalculator.CalculatePrice(item.FkProduct, item.Amount);
+
+                                            <span>
+                                                @((item.Amount * calculatedItem.NewBasePrice).ToString("F2"))
+
+                                                @if (calculatedItem.DiscountValue > 0M) {
+                                                    <small class="text-success">(@calculatedItem.DiscountValue % off)</small>
+                                                }
+                                            </span>
+                                         }
+                                    </td>
                                 </tr>
                             }
                         </tbody>

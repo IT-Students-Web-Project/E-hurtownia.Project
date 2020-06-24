@@ -45,14 +45,21 @@
                 <tbody>
                     @foreach (CartElement element in @Model) {
                         Products currentProduct = productList.Where(product => product.IdProduct == element.ProductID).Single();
+                        PriceCalculatorReturn calculatedPrice = PriceCalculator.CalculatePrice(element.ProductID, element.ProductQuantity);
                         <tr>
                             <td>@(++cartIndex)</td>
                             <td>@element.ProductID</td>
                             <td>@currentProduct.Name</td>
                             <td>@element.ProductQuantity</td>
                             <td>@unitList.Where(unit => unit.IdUnit == currentProduct.FkUnit).Single().Name (@unitList.Where(unit => unit.IdUnit == currentProduct.FkUnit).Single().ShortName)</td>
-                            <td>@currentProduct.BasePricePerUnit.ToString("F2") €</td>
-                            <td>@((currentProduct.BasePricePerUnit * element.ProductQuantity).ToString("F2")) €</td>
+                            <td>
+                                @if (calculatedPrice.NewBasePrice == currentProduct.BasePricePerUnit) {
+                                    <span>@currentProduct.BasePricePerUnit.ToString("F2") €</span>
+                                } else {
+                                    <span><del class="text-muted">@currentProduct.BasePricePerUnit.ToString("F2") €</del> @calculatedPrice.NewBasePrice.ToString("F2") € <small class="text-success">(@calculatedPrice.DiscountValue % off)</small></span>
+                                }
+                            </td>
+                            <td>@((calculatedPrice.NewBasePrice * element.ProductQuantity).ToString("F2")) €</td>
                             <td>
                                 <form method="post">
                                     <input type="submit" class="btn btn-sm btn-danger" value="Delete item" asp-controller="Cart" asp-action="DeleteItem" asp-route-id="@(cartIndex - 1)" />
