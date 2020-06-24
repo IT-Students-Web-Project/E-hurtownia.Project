@@ -266,13 +266,14 @@ namespace E_hurtownia.Controllers
                 correctPassword = true;
             }
 
-            bool? nullableIsRegisteredByHimself = TempData["isRegisteredByHimself"] as bool?;
-
+            bool? nullableIsRegisteredByHimself = TempData["isRegisteredByHimself"] as bool?; // If registered by Admin - false, if by new user - null
             bool isRegisteredByHimself = true;
+
             if (nullableIsRegisteredByHimself.HasValue)
                 isRegisteredByHimself = nullableIsRegisteredByHimself.Value;
 
-            
+            TempData["isRegisteredByHimself"] = isRegisteredByHimself;
+
             if (Request.Form.Keys.Contains("group"))
                 TempData["register-group"] = Request.Form["group"];
 
