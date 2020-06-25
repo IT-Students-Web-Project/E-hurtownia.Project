@@ -21,6 +21,8 @@
     <Compile Remove="Migrations\20200620122830_OrderStatusesData.Designer.cs" />
     <Compile Remove="Migrations\20200620122941_OrderStatusesData.cs" />
     <Compile Remove="Migrations\20200620122941_OrderStatusesData.Designer.cs" />
+    <Compile Remove="Migrations\20200621180407_OrderItems.Amount.cs" />
+    <Compile Remove="Migrations\20200621180407_OrderItems.Amount.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="baks\" />
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\products\" />
     <Folder Include="wwwroot\pdf\products\" />
