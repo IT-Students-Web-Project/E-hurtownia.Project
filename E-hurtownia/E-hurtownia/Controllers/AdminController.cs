@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using E_hurtownia.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace E_hurtownia.Controllers {
     public class AdminController : Controller {
@@ -152,6 +153,13 @@ namespace E_hurtownia.Controllers {
                 Customers deletedCustomer = databaseContext.Customers.Where(customer => customer.FkUser == id).Single();
                 Persons deletedPerson = databaseContext.Persons.Where(person => person.IdPerson == deletedCustomer.FkPerson).Single();
                 Addresses deletedAddress = databaseContext.Addresses.Where(address => address.IdAddress == deletedPerson.FkAddress).Single();
+
+                List<Orders> customerOrders = databaseContext.Orders.Where(order => order.FkCustomer == deletedCustomer.IdCustomer).Include(order => order.OrderItems).ToList();
+
+                foreach (Orders order in customerOrders) {
+                    databaseContext.OrderItems.RemoveRange(order.OrderItems);
+                    databaseContext.Orders.Remove(order);
+                }
 
                 databaseContext.Customers.Remove(deletedCustomer);
                 databaseContext.Persons.Remove(deletedPerson);

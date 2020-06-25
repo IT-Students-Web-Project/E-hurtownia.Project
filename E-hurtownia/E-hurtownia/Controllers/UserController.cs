@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using E_hurtownia.Models;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace E_hurtownia.Controllers
 {
@@ -133,6 +134,13 @@ namespace E_hurtownia.Controllers
                     Persons deletedPerson = databaseContext.Persons.Where(person => person.IdPerson == deletedCustomer.FkPerson).Single();
                     Addresses deletedAddress = databaseContext.Addresses.Where(address => address.IdAddress == deletedPerson.FkAddress).Single();
 
+                    List<Orders> customerOrders = databaseContext.Orders.Where(order => order.FkCustomer == deletedCustomer.IdCustomer).Include(order => order.OrderItems).ToList();
+
+                    foreach (Orders order in customerOrders) {
+                        databaseContext.OrderItems.RemoveRange(order.OrderItems);
+                        databaseContext.Orders.Remove(order);
+                    }
+
                     databaseContext.Customers.Remove(deletedCustomer);
                     databaseContext.Persons.Remove(deletedPerson);
                     databaseContext.Addresses.Remove(deletedAddress);
@@ -147,6 +155,8 @@ namespace E_hurtownia.Controllers
                 databaseContext.SaveChanges();
 
                 Response.Cookies.Delete("COOKIE_LOGGED_USERNAME");
+                Response.Cookies.Delete("COOKIE_CART_CONTENT");
+
                 return RedirectToAction("Index", "User");
             }
             else
@@ -457,6 +467,8 @@ namespace E_hurtownia.Controllers
                 if (isRegisteredByHimself)
                 {
                     Response.Cookies.Append("COOKIE_LOGGED_USERNAME", newUsername); // User registered properly, automatically logged in
+                    Response.Cookies.Append("COOKIE_CART_CONTENT", "");
+
                     return RedirectToAction("Index", "User");
                 }
                 else
