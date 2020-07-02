@@ -32,7 +32,7 @@
             }
         </div>
 
-        @if (ViewBag.COOKIE_LOGGED_USERNAME != null) {
+        @if (Context.Request.Cookies["COOKIE_LOGGED_USERNAME"] != null) {
             <div class="col-3 ml-3">
                 <div class="row">
                     <div class="col bg-secondary mb-3">
@@ -68,10 +68,15 @@
                             <form class="form-group">
 
                                 @if (ViewBag.MeCustomer != null) {
-                                    <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" asp-controller="KONTROLER_KOSZYKA" asp-action="AKCJA_KOSZYKA" />
+                                    @if (ViewBag.Cart.Count > 0) {
+                                        <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (@ViewBag.Cart.Count item/s)" asp-controller="Cart" asp-action="Index" />
+                                    } else {
+                                        <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (empty)" asp-controller="Cart" asp-action="Index" />
+                                    }
+
                                     <input type="submit" class="btn btn-block btn-dark" value="Change address" asp-controller="User" asp-action="ChangeAddress" />
                                 } else {
-                                    <input type="submit" class="btn btn-block btn-dark" value="Shopping cart (WIP)" disabled="disabled" />
+                                    <input type="submit" class="btn btn-block btn-dark" value="Shopping cart" disabled="disabled" />
                                     <input type="submit" class="btn btn-block btn-dark" value="Change address" disabled="disabled" />
                                 }
                             </form>
@@ -128,9 +133,3 @@
         }
     </div>
 </div>
-
-@section CheckUserLogged {
-    @{
-        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
-    }
-}

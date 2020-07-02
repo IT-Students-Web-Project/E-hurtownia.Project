@@ -9,15 +9,21 @@
 
 <h4>Stocks</h4>
 <hr />
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show my-3" role="alert">
+        @ViewBag.Message
+
+        <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdStock" class="control-label"></label>
-                <input asp-for="IdStock" class="form-control" />
-                <span asp-validation-for="IdStock" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="FkProduct" class="control-label"></label>
                 <select asp-for="FkProduct" class="form-control" asp-items="ViewBag.FkProduct"></select>
@@ -49,10 +55,4 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
-
-@section CheckUserLogged {
-    @{
-        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
-    }
 }

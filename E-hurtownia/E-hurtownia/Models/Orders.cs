@@ -5,10 +5,13 @@ namespace E_hurtownia.Models
 {
     public partial class Orders
     {
+        public Orders()
+        {
+            OrderItems = new HashSet<OrderItems>();
+        }
+
         public int IdOrder { get; set; }
         public int FkCustomer { get; set; }
-        public int FkProduct { get; set; }
-        public int Amount { get; set; }
         public DateTime? DateOrdered { get; set; }
         public DateTime? DateSent { get; set; }
         public DateTime? DatePaid { get; set; }
@@ -17,6 +20,6 @@ namespace E_hurtownia.Models
 
         public virtual Customers FkCustomerNavigation { get; set; }
         public virtual OrderStatuses FkOrderStatusNavigation { get; set; }
-        public virtual Products FkProductNavigation { get; set; }
+        public virtual ICollection<OrderItems> OrderItems { get; set; }
     }
 }

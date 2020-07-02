@@ -13,6 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200620112922_first.cs" />
+    <Compile Remove="Migrations\20200620112922_first.Designer.cs" />
+    <Compile Remove="Migrations\20200620120346_First.cs" />
+    <Compile Remove="Migrations\20200620120346_First.Designer.cs" />
+    <Compile Remove="Migrations\20200620122830_OrderStatusesData.cs" />
+    <Compile Remove="Migrations\20200620122830_OrderStatusesData.Designer.cs" />
+    <Compile Remove="Migrations\20200620122941_OrderStatusesData.cs" />
+    <Compile Remove="Migrations\20200620122941_OrderStatusesData.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -28,8 +39,50 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\products\" />
     <Folder Include="wwwroot\pdf\products\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Admin\RegisterUser.cshtml" />
+    <None Include="Views\Admin\StorehousesList.cshtml" />
+    <None Include="Views\Admin\StorehousesListAction_CREATE.cshtml" />
+    <None Include="Views\Admin\StorehousesListAction_UPDATE_ADDRESS.cshtml" />
+    <None Include="Views\Admin\UsersList.cshtml" />
+    <None Include="Views\Cart\Index.cshtml" />
+    <None Include="Views\Customer\Product.cshtml" />
+    <None Include="Views\PartialViews\FormAddress.cshtml" />
+    <None Include="Views\PartialViews\FormPerson.cshtml" />
+    <None Include="Views\PartialViews\ProductList.cshtml" />
+    <None Include="Views\Products\ChangeImage.cshtml" />
+    <None Include="Views\Products\ChangePdf.cshtml" />
+    <None Include="Views\Products\Create.cshtml" />
+    <None Include="Views\Products\Delete.cshtml" />
+    <None Include="Views\Products\Details.cshtml" />
+    <None Include="Views\Products\Edit.cshtml" />
+    <None Include="Views\Products\Index.cshtml" />
+    <None Include="Views\Shared\Error.cshtml" />
+    <None Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <None Include="Views\Stocks\Create.cshtml" />
+    <None Include="Views\Stocks\Delete.cshtml" />
+    <None Include="Views\Stocks\Details.cshtml" />
+    <None Include="Views\Stocks\Edit.cshtml" />
+    <None Include="Views\Stocks\Index.cshtml" />
+    <None Include="Views\Units\Create.cshtml" />
+    <None Include="Views\Units\Delete.cshtml" />
+    <None Include="Views\Units\Details.cshtml" />
+    <None Include="Views\Units\Edit.cshtml" />
+    <None Include="Views\Units\Index.cshtml" />
+    <None Include="Views\User\ChangeAddress.cshtml" />
+    <None Include="Views\User\ChangePassword.cshtml" />
+    <None Include="Views\User\Error.cshtml" />
+    <None Include="Views\User\Index.cshtml" />
+    <None Include="Views\User\Login.cshtml" />
+    <None Include="Views\User\RegisterPerson.cshtml" />
+    <None Include="Views\_ViewImports.cshtml" />
+    <None Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
 
 

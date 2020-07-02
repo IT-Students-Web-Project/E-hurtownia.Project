@@ -6,6 +6,9 @@
 <h5>Showing all registered users in database</h5>
 <h5>Currently, there are @ViewBag.Users.Count registered accounts</h5>
 
+<p>
+    <a asp-controller="Admin" asp-action="RegisterUser">Register New User</a>
+</p>
 <table class="table table-hover mt-4">
     <thead>
         <tr>
@@ -19,7 +22,8 @@
     </thead>
 
     <tbody>
-        @foreach (Users selectedUser in ViewBag.Users) {
+        @foreach (Users selectedUser in ViewBag.Users)
+        {
             <tr>
                 <td>
                     @selectedUser.IdUser
@@ -41,43 +45,51 @@
 
                     @userGroup.Name
 
-                    @if (selectedUser.FkGroup == 2) { // Showing Customer ID (CID) if the user is registered in CUSTOMERS table (must be also in Customer group)
+                    @if (selectedUser.FkGroup == 2)
+                    { // Showing Customer ID (CID) if the user is registered in CUSTOMERS table (must be also in Customer group)
                         List<Users> users = ViewBag.Users;
                         Users currentUser = users.Where(user => user.IdUser == selectedUser.IdUser).ToList().First();
 
                         List<Customers> allCustomers = ViewBag.Customers;
                         List<Customers> customersWithCurrentUserID = allCustomers.Where(customer => customer.FkUser == selectedUser.IdUser).ToList();
 
-                        if (customersWithCurrentUserID.Count == 0) { // Current user is registered in CUSTOMERS table
+                        if (customersWithCurrentUserID.Count == 0)
+                        { // Current user is registered in CUSTOMERS table
                             <span><i>(CID null)</i></span>
-                        } else if (customersWithCurrentUserID.Count == 1) {
+                        }
+                        else if (customersWithCurrentUserID.Count == 1)
+                        {
                             <span>(CID @customersWithCurrentUserID.First().IdCustomer)</span>
-                        } else {
+                        }
+                        else
+                        {
                             <span class="text-danger"><i>(multiple CIDs)</i></span>
                         }
                     }
                 </td>
                 <td>
                     <form class="form-inline">
-                        @if (selectedUser.Login != ViewBag.COOKIE_LOGGED_USERNAME) {
+                        @if (selectedUser.Login != Context.Request.Cookies["COOKIE_LOGGED_USERNAME"]) {
                             <input class="btn btn-sm btn-danger" type="submit" value="Delete" asp-controller="Admin" asp-action="UsersListAction_DELETE" asp-route-id="@selectedUser.IdUser" />
-                        } else {
+                        }
+                        else
+                        {
                             <span class="text-muted" style="font-style: italic">You cannot perform any actions on yourself</span>
                         }
 
-                        @if (selectedUser.FkGroup != 1 && selectedUser.Login != ViewBag.COOKIE_LOGGED_USERNAME) {
+                        @if (selectedUser.FkGroup != 1 && selectedUser.Login != Context.Request.Cookies["COOKIE_LOGGED_USERNAME"]) {
                             <input class="btn btn-sm btn-danger ml-2" type="submit" value="Make Admin" asp-controller="Admin" asp-action="UsersListAction_MAKE_ADMIN" asp-route-id="@selectedUser.IdUser" />
                         }
 
-                        @if (selectedUser.FkGroup != 3 && selectedUser.Login != ViewBag.COOKIE_LOGGED_USERNAME) {
+                        @if (selectedUser.FkGroup != 3 && selectedUser.Login != Context.Request.Cookies["COOKIE_LOGGED_USERNAME"]) {
                             <input class="btn btn-sm btn-warning ml-2" type="submit" value="Make Storekeeper" asp-controller="Admin" asp-action="UsersListAction_MAKE_STOREKEEPER" asp-route-id="@selectedUser.IdUser" />
                         }
 
-                        @if (selectedUser.FkGroup != 4 && selectedUser.Login != ViewBag.COOKIE_LOGGED_USERNAME) {
+                        @if (selectedUser.FkGroup != 4 && selectedUser.Login != Context.Request.Cookies["COOKIE_LOGGED_USERNAME"]) {
                             <input class="btn btn-sm btn-warning ml-2" type="submit" value="Make Offerent" asp-controller="Admin" asp-action="UsersListAction_MAKE_OFFERENT" asp-route-id="@selectedUser.IdUser" />
                         }
 
-                        @if (selectedUser.FkGroup != 2 && selectedUser.Login != ViewBag.COOKIE_LOGGED_USERNAME) {
+                        @if (selectedUser.FkGroup != 2 && selectedUser.Login != Context.Request.Cookies["COOKIE_LOGGED_USERNAME"]) {
                             <input class="btn btn-sm btn-success ml-2" type="submit" value="Make Customer" asp-controller="Admin" asp-action="UsersListAction_MAKE_CUSTOMER" asp-route-id="@selectedUser.IdUser" />
                         }
                     </form>
@@ -86,9 +98,3 @@
         }
     </tbody>
 </table>
-
-@section CheckUserLogged {
-    @{
-        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
-    }
-}

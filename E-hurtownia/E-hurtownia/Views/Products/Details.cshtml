@@ -47,9 +47,3 @@
     <a asp-action="Edit" asp-route-id="@Model.IdProduct">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
-
-@section CheckUserLogged {
-    @{
-        await Html.RenderPartialAsync("~/Views/PartialViews/NavBarUser.cshtml");
-    }
-}

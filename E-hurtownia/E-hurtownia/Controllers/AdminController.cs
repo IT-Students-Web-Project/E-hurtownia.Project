@@ -137,7 +137,6 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult UsersList(int id) { // ACTION - SHOW USERS LIST
             return CheckAdminRights(() => {
-                ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
                 ViewBag.Users = databaseContext.Users.ToList();
                 ViewBag.Groups = databaseContext.Groups.ToList();
                 ViewBag.Customers = databaseContext.Customers.ToList();
@@ -219,7 +218,6 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult StorehousesList() { // ACTION - SHOW STOREHOUSES LIST
             return CheckAdminRights(() => {
-                ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
                 ViewBag.Addresses = databaseContext.Addresses.ToList();
                 ViewBag.Customers = databaseContext.Customers.ToList();
                 ViewBag.Persons = databaseContext.Persons.ToList();
@@ -263,7 +261,6 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult StorehousesListAction_UPDATE_ADDRESS(int id) { // ACTION - SHOW STOREHOUSES ADDRESS UPDATING FORM
             return CheckAdminRights(() => {
-                ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
                 ViewBag.Address = databaseContext.Addresses.Where(address => address.IdAddress == id).Single();
 
                 if (TempData["AddressResult_InvalidStreet"] != null) ViewBag.AddressResult_InvalidStreet = true;
@@ -282,8 +279,6 @@ namespace E_hurtownia.Controllers {
 
         public IActionResult StorehousesListAction_CREATE() { // ACTION - SHOW STOREHOUSE CREATING FORM
             return CheckAdminRights(() => {
-                ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-
                 if (TempData["AddressResult_InvalidStreet"] != null) ViewBag.AddressResult_InvalidStreet = true;
                 if (TempData["AddressResult_InvalidBuildingNum"] != null) ViewBag.AddressResult_InvalidBuildingNum = true;
                 if (TempData["AddressResult_InvalidCity"] != null) ViewBag.AddressResult_InvalidCity = true;
@@ -338,6 +333,42 @@ namespace E_hurtownia.Controllers {
             databaseContext.SaveChanges();
 
             return RedirectToAction("StorehousesList", "Admin");
+        }
+
+        public IActionResult RegisterUser()
+        {
+            TempData["isRegisteredByHimself"] = false;
+            ViewBag.Groups = databaseContext.Groups;
+
+
+            string lastLoginResult = (string)TempData["login-result"];
+            string lastRegisterResult = (string)TempData["register-result"];
+
+            if (lastLoginResult == "user-not-found")
+            {
+                ViewBag.UserNotFound = true;
+            }
+            else if (lastLoginResult == "password-incorrect")
+            {
+                ViewBag.PasswordIncorrect = true;
+                ViewBag.LastUserName = (string)TempData["login-name"];
+            }
+
+            if (lastRegisterResult == "invalid-username")
+            {
+                ViewBag.InvalidUsername = true;
+            }
+            else if (lastRegisterResult == "invalid-password")
+            {
+                ViewBag.InvalidPassword = true;
+                ViewBag.LastUserName = (string)TempData["register-name"];
+            }
+            else if (lastRegisterResult == "user-exists")
+            {
+                ViewBag.UserExists = true;
+            }
+
+            return View();
         }
     }
 }

@@ -23,7 +23,6 @@ namespace E_hurtownia.Controllers
         {
             int currentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
 
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             ViewBag.CurrentUserID = currentUserID;
             ViewBag.Storekeepers = _context.Storekeepers.ToList();
             ViewBag.IsAdmin = _context.Users.Where(user => user.IdUser == currentUserID).Single().FkGroup == 1;
@@ -35,8 +34,6 @@ namespace E_hurtownia.Controllers
         // GET: Stocks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-
             if (id == null)
             {
                 return NotFound();
@@ -57,7 +54,6 @@ namespace E_hurtownia.Controllers
         // GET: Stocks/Create
         public IActionResult Create()
         {
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             int currentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
             int? currentUserGroup = _context.Users.Where(user => user.IdUser == currentUserID).Single().FkGroup;
 
@@ -92,21 +88,33 @@ namespace E_hurtownia.Controllers
         {
             ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
 
-            if (ModelState.IsValid)
+            bool alreadyExists = _context.Stocks.Where(s => s.FkProduct == stocks.FkProduct && s.FkStorehouse == stocks.FkStorehouse).Count() > 0;
+            if (alreadyExists)
+                ViewBag.Message = "Cannot create! Such stock already exists!";
+
+            if (!ModelState.IsValid || alreadyExists)
             {
-                _context.Add(stocks);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewData["FkProduct"] = new SelectList(_context.Products, "IdProduct", "Name", stocks.FkProduct);
+                ViewData["FkStorehouse"] = new SelectList(_context.Storehouses, "IdStorehouse", "IdStorehouse", stocks.FkStorehouse);
+                return View(stocks);
             }
-            ViewData["FkProduct"] = new SelectList(_context.Products, "IdProduct", "Name", stocks.FkProduct);
-            ViewData["FkStorehouse"] = new SelectList(_context.Storehouses, "IdStorehouse", "IdStorehouse", stocks.FkStorehouse);
-            return View(stocks);
+
+            try
+            {
+                stocks.IdStock = _context.Stocks.Max(s => s.IdStock) + 1;
+            }
+            catch(Exception e)
+            {
+                stocks.IdStock = 1;
+            }
+            _context.Add(stocks);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Stocks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
             int currentUserID = _context.Users.Where(user => user.Login == Request.Cookies["COOKIE_LOGGED_USERNAME"]).Single().IdUser;
             int? currentUserGroup = _context.Users.Where(user => user.IdUser == currentUserID).Single().FkGroup;
 
@@ -149,8 +157,6 @@ namespace E_hurtownia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdStock,FkProduct,Amount,FkStorehouse,Status")] Stocks stocks)
         {
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-
             if (id != stocks.IdStock)
             {
                 return NotFound();
@@ -184,8 +190,6 @@ namespace E_hurtownia.Controllers
         // GET: Stocks/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            ViewBag.COOKIE_LOGGED_USERNAME = Request.Cookies["COOKIE_LOGGED_USERNAME"];
-
             if (id == null)
             {
                 return NotFound();
